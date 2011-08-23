@@ -16,12 +16,23 @@ General usage instructions:
  * Right mouse button: Popup menu / preferences
  * Mouse wheel: Scroll page up/down
 
+Known bugs:
+-----------
+ - Scale outline when it's too tall to fit
+ - Plugin not deal well with deleting large amounts of text when file is too large
+ - Rotate or wrap outline when toolwindow is moved to top or bottom
+ - Use user's color settings for selection, background, etc
+ - Problems when closing tab groups
+ - Visible region draws incorrectly when first and last line visible in editor are both folded
+ - Does not draw column-mode (rectangular) selection correctly
+ - Hide folded code
+ - Highlight highlighted regions
+ - Show syntax coloring in outline
+ - Plugin does not work when running on Java 6 (JDK 6.0)
+
 Author of original project:
 ---------------------------
-Vendor: Keith Lea
-
-Email: keith at kano.net
-
-Based at http://plugins.intellij.net/plugin/?idea&id=160
-
-Bugtracker page: http://code.google.com/p/intellij-code-outline/issues/list
+ Vendor: Keith Lea
+ Email: keith at kano.net
+ Based at http://plugins.intellij.net/plugin/?idea&id=160
+ Bugtracker page: http://code.google.com/p/intellij-code-outline/issues/list
