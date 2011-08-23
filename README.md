@@ -1,5 +1,5 @@
 *Description:*
-Shows a zoomed out "outline" of your code while you're editing it.
+    Shows a zoomed out "outline" of your code while you're editing it.
 
 *General usage instructions:*
     - Left mouse button: Go to position in file (do not expand fold region)
@@ -12,7 +12,7 @@ Shows a zoomed out "outline" of your code while you're editing it.
     - Mouse wheel: Scroll page up/down
 
 *Author of original project:*
-    Products: IntelliJ IDEA
     Vendor: Keith Lea
     Email: keith at kano.net
+    Based at http://plugins.intellij.net/plugin/?idea&id=160
     Bugtracker page: http://code.google.com/p/intellij-code-outline/issues/list
