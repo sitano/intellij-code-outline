@@ -30,7 +30,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  *  File created by keith @ Oct 26, 2003
- *
+ *  Modified by John.Koepi
  */
 
 package net.kano.codeoutline;
@@ -42,18 +42,25 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Computes and allows access to the thickness (or "overall opacity") of each
  * ASCII text character in the system's default monospaced font.
  */
 public class LetterThicknessManager {
-    /** The JDK 1.4 fully-qualified classname for FontDesignMetrics. */
+    /**
+     * The JDK 1.4 fully-qualified classname for FontDesignMetrics.
+     */
     private static final String JDK_14_CLASS = "sun.awt.font.FontDesignMetrics";
-    /** The JDK 5.0 fully-qualified classname for FontDesignMetrics. */
+    /**
+     * The JDK 5.0 fully-qualified classname for FontDesignMetrics.
+     */
     private static final String JDK_5_CLASS = "sun.font.FontDesignMetrics";
 
-    /** A singleton letter thickness object. */
+    /**
+     * A singleton letter thickness object.
+     */
     private static LetterThicknessManager singleton;
 
     /**
@@ -62,20 +69,28 @@ public class LetterThicknessManager {
      * @return a <code>LetterThicknessManager</code> instance
      */
     public synchronized static LetterThicknessManager getInstance()
-            throws ClassNotFoundException {
+        throws ClassNotFoundException {
+
         if (singleton == null) {
             singleton = new LetterThicknessManager();
         }
+
         return singleton;
     }
 
-    /** The first character to be measured. */
+    /**
+     * The first character to be measured.
+     */
     private static final char FIRST = 33;
-    /** The last character to be measured. */
+    /**
+     * The last character to be measured.
+     */
     private static final char LAST = 126;
 
-    /** The array of character thicknesses. */
-    private final int[] thicknesses = new int[LAST-FIRST+1];
+    /**
+     * The array of character thicknesses.
+     */
+    private final int[] thicknesses = new int[LAST - FIRST + 1];
 
     /**
      * Creates a new letter thickness manager.
@@ -85,20 +100,28 @@ public class LetterThicknessManager {
 
         Class fdm = getFontDesignMetricsClass();
         try {
-            Class[] params = new Class[] { Font.class };
-            Constructor constructor = fdm.getConstructor(params);
-            Object[] args = new Object[] { font };
-            FontMetrics fm = (FontMetrics) constructor.newInstance(args);
-            setMetrics(fm);
+            Class[] params = new Class[]{ Font.class };
+            Object[] args = new Object[]{ font };
 
+            FontMetrics fm = null;
+
+            try {
+                // static create method (JDK6, 7)
+                Method staticMethodConstructor = fdm.getMethod("getMetrics", params);
+                fm = (FontMetrics) staticMethodConstructor.invoke(null, font);
+            } catch (NoSuchMethodException e) {
+                // old constructor (old JDK5 impl)
+                Constructor constructor = fdm.getConstructor(params);
+                fm = (FontMetrics) constructor.newInstance(args);
+            } finally {
+                setMetrics(fm);
+            }
         } catch (InvocationTargetException e) {
             Throwable te = e.getTargetException();
             if (te instanceof RuntimeException) throw (RuntimeException) te;
             else throw new RuntimeException(te);
-
         } catch (RuntimeException e) {
             throw e;
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -112,13 +135,14 @@ public class LetterThicknessManager {
      * @throws ClassNotFoundException if the class can be found
      */
     private Class getFontDesignMetricsClass() throws ClassNotFoundException {
-        Class fdm;
-        fdm = getClass(JDK_14_CLASS);
-        if (fdm == null) fdm = getClass(JDK_5_CLASS);
-        if (fdm == null) {
-            throw new ClassNotFoundException("Could not find "
-                    + JDK_14_CLASS + " or " + JDK_5_CLASS);
-        }
+        Class fdm = getClass(JDK_14_CLASS);
+
+        if (fdm == null)
+            fdm = getClass(JDK_5_CLASS);
+
+        if (fdm == null)
+            throw new ClassNotFoundException("Could not find " + JDK_14_CLASS + " or " + JDK_5_CLASS);
+
         return fdm;
     }
 
@@ -147,11 +171,10 @@ public class LetterThicknessManager {
         int mascent = metrics.getMaxAscent();
 
         int width = metrics.getMaxAdvance();
-        int height = mascent+metrics.getMaxDescent();
-        BufferedImage bi = new BufferedImage(width, height,
-                BufferedImage.TYPE_BYTE_BINARY);
+        int height = mascent + metrics.getMaxDescent();
+        BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_BINARY);
 
-        int size = width*height;
+        int size = width * height;
 
         // initialize the buffer
         Graphics2D g = bi.createGraphics();
@@ -162,13 +185,15 @@ public class LetterThicknessManager {
         // compute the thickness of each character
         char[] arr = new char[1];
         int max = 0;
+
         for (char i = FIRST; i <= LAST; i++) {
-            g.clearRect(0, 0, width, height);
             arr[0] = i;
+
+            g.clearRect(0, 0, width, height);
             g.drawChars(arr, 0, 1, 0, mascent);
 
-            int val = getThickness(bi)*255/size;
-            thicknesses[i-FIRST] = val;
+            int val = getThickness(bi) * 255 / size;
+            thicknesses[i - FIRST] = val;
 
             max = Math.max(max, val);
         }
@@ -190,7 +215,7 @@ public class LetterThicknessManager {
      */
     private int getThickness(BufferedImage bi) {
         int[] rgb = bi.getRGB(0, 0, bi.getWidth(), bi.getHeight(),
-                null, 0, bi.getWidth());
+            null, 0, bi.getWidth());
         int thickness = 0;
         for (int value : rgb) {
             if ((value & 0xFFFFFF) == 0) thickness++;
@@ -210,6 +235,6 @@ public class LetterThicknessManager {
         // the character is an ASCII control character or null
         if (ch < FIRST) return 0;
         else if (ch > LAST) return 128;
-        return thicknesses[ch-FIRST];
+        return thicknesses[ch - FIRST];
     }
 }

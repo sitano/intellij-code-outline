@@ -22,6 +22,10 @@ General usage instructions:
 
 Known bugs:
 -----------
+ + Plugin does not work when running on Java 6 (JDK 6.0)
+ - Exceptions when pointing to not existing place in code
+ - Code Outline panel is not always rendered when open file or tab
+
  - Scale outline when it's too tall to fit
  - Plugin not deal well with deleting large amounts of text when file is too large
  - Rotate or wrap outline when toolwindow is moved to top or bottom
@@ -32,7 +36,29 @@ Known bugs:
  - Hide folded code
  - Highlight highlighted regions
  - Show syntax coloring in outline
- - Plugin does not work when running on Java 6 (JDK 6.0)
+
+IntelliJ IDEA debug note:
+-------------------------
+ If you want to debug it in runtime, it's recommended to increase PermGen size for
+ your debug project to startup or you are able to get unpredictable jvm experience.
+ To deal with it use something like this: -Xms2G -Xmx4G -XX:MaxPermSize=2G
+
+ To run IDEA in the sandbox use:
+ /usr/java/default/bin/java -agentlib:jdwp=transport=dt_socket,address=127.0.0.1:49670,suspend=y,server=n
+ -Xms2G -Xmx4G -XX:MaxPermSize=2G -Xbootclasspath/a:~/idea-com/idea-IC-108.SNAPSHOT/lib/boot.jar
+ -Didea.config.path=~/.IdeaIC11/system/plugins-sandbox/config
+ -Didea.system.path=~/.IdeaIC11/system/plugins-sandbox/system
+ -Didea.plugins.path=~/.IdeaIC11/system/plugins-sandbox/plugins
+ -Didea.platform.prefix=Idea
+ -Dfile.encoding=UTF-8
+ -classpath /usr/java/default/lib/tools.jar:~/idea-com/idea-IC-108.SNAPSHOT/lib/idea_rt.jar:
+ ~/idea-com/idea-IC-108.SNAPSHOT/lib/idea.jar:~/idea-com/idea-IC-108.SNAPSHOT/lib/bootstrap.jar:
+ ~/idea-com/idea-IC-108.SNAPSHOT/lib/extensions.jar:~/idea-com/idea-IC-108.SNAPSHOT/lib/util.jar:
+ ~/idea-com/idea-IC-108.SNAPSHOT/lib/openapi.jar:~/idea-com/idea-IC-108.SNAPSHOT/lib/trove4j.jar:
+ ~/idea-com/idea-IC-108.SNAPSHOT/lib/jdom.jar:~/idea-com/idea-IC-108.SNAPSHOT/lib/log4j.jar
+ com.intellij.idea.Main
+
+ Also com.intellij.rt.execution.application.AppMain can be used.
 
 Author of original project:
 ---------------------------
