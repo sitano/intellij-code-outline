@@ -1,9 +1,13 @@
-Code Outline Plugin
-===================
+Code Outline Plugin for IntelliJ IDEA
+=====================================
 
 Description:
 ------------
 Shows a zoomed out "outline" of your code while you're editing it.
+
+Requirements:
+-------------
+ IntelliJ IDEA 10.5.1 and JDK6
 
 General usage instructions:
 ---------------------------
@@ -32,7 +36,6 @@ Known bugs:
 
 Author of original project:
 ---------------------------
- Vendor: Keith Lea
- Email: keith at kano.net
- Based at http://plugins.intellij.net/plugin/?idea&id=160
- Bugtracker page: http://code.google.com/p/intellij-code-outline/issues/list
+This is the fork of original [code-outline][] plugin that is not supported since 2005 year.
+
+ [code-outline]: http://plugins.intellij.net/plugin/?idea&id=160

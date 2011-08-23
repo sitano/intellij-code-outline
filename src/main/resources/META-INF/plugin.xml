@@ -1,0 +1,15 @@
+<!DOCTYPE idea-plugin PUBLIC "" "http://plugins.intellij.net/plugin.dtd">
+<idea-plugin url="http://code.google.com/p/intellij-code-outline/">
+  <name>Code Outline 2</name>
+  <description>Shows a zoomed out "outline" of your code while you're editing it.</description>
+  <version>0.0.7</version>
+  <vendor email="john.koepi@gmail.com">Ivan</vendor>
+  <!--<idea-version since-build="3396"/>-->
+
+  <application-components>
+    <component>
+      <implementation-class>net.kano.codeoutline.CodeOutlinePlugin</implementation-class>
+    </component>
+  </application-components>
+</idea-plugin>
+
