@@ -7,7 +7,7 @@ Shows a zoomed out "outline" of your code while you're editing it.
 
 Requirements:
 -------------
- IntelliJ IDEA 10.5.1 and JDK6
+ IntelliJ IDEA 9 (and greater) and JDK6, 7
 
 General usage instructions:
 ---------------------------
@@ -22,10 +22,9 @@ General usage instructions:
 
 Known bugs:
 -----------
- + Plugin does not work when running on Java 6 (JDK 6.0)
+ + (Fixed in 1.0) Plugin does not work when running on Java 6 (JDK 6.0)
  - Exceptions when pointing to not existing place in code
  - Code Outline panel is not always rendered when open file or tab
-
  - Scale outline when it's too tall to fit
  - Plugin not deal well with deleting large amounts of text when file is too large
  - Rotate or wrap outline when toolwindow is moved to top or bottom
