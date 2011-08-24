@@ -30,12 +30,13 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  *  File created by keith @ Oct 22, 2003
- *
+ *  Modified by John.Koepi
  */
 
 package net.kano.codeoutline;
 
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -74,39 +75,68 @@ public class CodeOutlineToolWindow extends JPanel {
     /** The panel currently being displayed. */
     private CodeOutlinePanel currentPanel = null;
 
-    private Map<FileEditor, CodeOutlinePanel> editor2panel
-            = new IdentityHashMap<FileEditor, CodeOutlinePanel>();
-    private Map<VirtualFile, CodeOutlinePanel> file2panel
-            = new IdentityHashMap<VirtualFile, CodeOutlinePanel>();
+    private Map<FileEditor, CodeOutlinePanel> editor2panel = new IdentityHashMap<FileEditor, CodeOutlinePanel>();
+    private Map<VirtualFile, CodeOutlinePanel> file2panel = new IdentityHashMap<VirtualFile, CodeOutlinePanel>();
 
     /**
      * An editor listener for the given project, to create and destroy code
      * outline panels.
      */
-    private FileEditorManagerListener editorListener
-            = new FileEditorManagerListener() {
+    private FileEditorManagerListener editorListener = new FileEditorManagerListener() {
+        @Override
         public void fileOpened(FileEditorManager source, VirtualFile file) {
             FileEditor fileEditor = source.getSelectedEditor(file);
             if (fileEditor instanceof TextEditor) {
-                openPanel(fileEditor, file);
+                CodeOutlinePanel panel = openPanel(fileEditor, file);
+                /* Force panel sub-component switch, cause we have no guaranty it will come
+                 * after we register new instance.
+                 */
+                if (checkCurrentPanel(source, file, panel))
+                    repaint();
             }
         }
 
+        @Override
         public void fileClosed(FileEditorManager source, VirtualFile file) {
             closePanel(file);
         }
 
+        /**
+         * Switch panel if given editor is selected
+         */
+        private boolean checkCurrentPanel(FileEditorManager source, VirtualFile file, CodeOutlinePanel panel) {
+            EditorEx selectedEditorEx = ((EditorEx)source.getSelectedTextEditor());
+            if (selectedEditorEx.getVirtualFile() == file && !isAncestorOf(panel)) {
+                replacePanel(panel);
+                return true;
+            }
+            
+            return false;
+        }
+
+        /**
+         * This often comes before fileOpened event (or may not)
+         */
+        @Override
         public void selectionChanged(final FileEditorManagerEvent event) {
+            CodeOutlinePanel panel = editor2panel.get(event.getNewEditor());
+            replacePanel(panel);
+            repaint();
+        }
+
+        /**
+         * Replaces current panel with new panel.
+         */
+        private void replacePanel(CodeOutlinePanel panel) {
             if (currentPanel != null) {
                 remove(currentPanel);
             }
-            CodeOutlinePanel panel = editor2panel.get(
-                    event.getNewEditor());
+
             currentPanel = panel;
+
             if (panel != null) {
                 add(panel, GBC_DEFAULT);
             }
-            repaint();
         }
     };
 
@@ -148,12 +178,14 @@ public class CodeOutlineToolWindow extends JPanel {
      * @param fileEditor a file editor
      * @param file a file
      */
-    private synchronized void openPanel(FileEditor fileEditor,
-            VirtualFile file) {
+    private synchronized CodeOutlinePanel openPanel(FileEditor fileEditor, VirtualFile file) {
         Editor editor = ((TextEditor) fileEditor).getEditor();
         CodeOutlinePanel panel = new CodeOutlinePanel(plugin, project, editor);
+
         editor2panel.put(fileEditor, panel);
         file2panel.put(file, panel);
+
+        return panel;
     }
 
     /**

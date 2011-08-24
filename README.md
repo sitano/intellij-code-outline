@@ -23,8 +23,8 @@ General usage instructions:
 Known bugs:
 -----------
  + (Fixed in 1.0) Plugin does not work when running on Java 6 (JDK 6.0)
+ + (Fixed in 1.0) Code Outline panel is not always rendered when open file or tab
  - Exceptions when pointing to not existing place in code
- - Code Outline panel is not always rendered when open file or tab
  - Scale outline when it's too tall to fit
  - Plugin not deal well with deleting large amounts of text when file is too large
  - Rotate or wrap outline when toolwindow is moved to top or bottom
@@ -50,11 +50,7 @@ IntelliJ IDEA debug note:
  -Didea.plugins.path=~/.IdeaIC11/system/plugins-sandbox/plugins
  -Didea.platform.prefix=Idea
  -Dfile.encoding=UTF-8
- -classpath /usr/java/default/lib/tools.jar:~/idea-com/idea-IC-108.SNAPSHOT/lib/idea_rt.jar:
- ~/idea-com/idea-IC-108.SNAPSHOT/lib/idea.jar:~/idea-com/idea-IC-108.SNAPSHOT/lib/bootstrap.jar:
- ~/idea-com/idea-IC-108.SNAPSHOT/lib/extensions.jar:~/idea-com/idea-IC-108.SNAPSHOT/lib/util.jar:
- ~/idea-com/idea-IC-108.SNAPSHOT/lib/openapi.jar:~/idea-com/idea-IC-108.SNAPSHOT/lib/trove4j.jar:
- ~/idea-com/idea-IC-108.SNAPSHOT/lib/jdom.jar:~/idea-com/idea-IC-108.SNAPSHOT/lib/log4j.jar
+ -classpath /usr/java/default/lib/tools.jar:~/idea-com/idea-IC-108.SNAPSHOT/lib/idea_rt.jar:~/idea-com/idea-IC-108.SNAPSHOT/lib/idea.jar:~/idea-com/idea-IC-108.SNAPSHOT/lib/bootstrap.jar:~/idea-com/idea-IC-108.SNAPSHOT/lib/extensions.jar:~/idea-com/idea-IC-108.SNAPSHOT/lib/util.jar:~/idea-com/idea-IC-108.SNAPSHOT/lib/openapi.jar:~/idea-com/idea-IC-108.SNAPSHOT/lib/trove4j.jar:~/idea-com/idea-IC-108.SNAPSHOT/lib/jdom.jar:~/idea-com/idea-IC-108.SNAPSHOT/lib/log4j.jar
  com.intellij.idea.Main
 
  Also com.intellij.rt.execution.application.AppMain can be used.

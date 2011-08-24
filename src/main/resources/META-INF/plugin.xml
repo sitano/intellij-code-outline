@@ -8,6 +8,7 @@
     <change-notes>
         Since 1.0:
             - Support for JDK6 (fixed bug NoClassMethodFound Exception)
+            - No panel rendering when open projects and new files
     </change-notes>
     <idea-version since-build="93.13"/>
     <application-components>

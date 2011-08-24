@@ -106,11 +106,11 @@ public class LetterThicknessManager {
             FontMetrics fm = null;
 
             try {
-                // static create method (JDK6, 7)
+                // Static fabric method (JDK6, OpenJDK7)
                 Method staticMethodConstructor = fdm.getMethod("getMetrics", params);
                 fm = (FontMetrics) staticMethodConstructor.invoke(null, font);
             } catch (NoSuchMethodException e) {
-                // old constructor (old JDK5 impl)
+                // Constructor (old JDK4, 5 impl)
                 Constructor constructor = fdm.getConstructor(params);
                 fm = (FontMetrics) constructor.newInstance(args);
             } finally {
