@@ -68,12 +68,12 @@ public class CodeOutlineToolWindow extends JPanel {
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 0, 0), 0, 0);
 
-    private CodeOutlinePlugin plugin;
-    private Project project;
-    private FileEditorManager fem;
+    private final CodeOutlinePlugin plugin;
+    private final Project project;
+    private final FileEditorManager fem;
 
     /** The panel currently being displayed. */
-    private CodeOutlinePanel currentPanel = null;
+    private volatile CodeOutlinePanel currentPanel = null;
 
     private Map<FileEditor, CodeOutlinePanel> editor2panel = new IdentityHashMap<FileEditor, CodeOutlinePanel>();
     private Map<VirtualFile, CodeOutlinePanel> file2panel = new IdentityHashMap<VirtualFile, CodeOutlinePanel>();
@@ -115,7 +115,9 @@ public class CodeOutlineToolWindow extends JPanel {
         }
 
         /**
-         * This often comes before fileOpened event (or may not)
+         * This often comes before fileOpened event (or may not).
+         * This event comes when current text editor changed. When you click another tab for i.e.
+         * This event does not come when selecting last opened tab at project open.
          */
         @Override
         public void selectionChanged(final FileEditorManagerEvent event) {
@@ -218,6 +220,14 @@ public class CodeOutlineToolWindow extends JPanel {
         }
         editor2panel.clear();
         file2panel.clear();
+    }
+
+    public synchronized CodeOutlinePanel getPanel(FileEditor editor) {
+        return editor2panel.get(editor);
+    }
+
+    public CodeOutlinePanel getCurrentPanel() {
+        return currentPanel;
     }
 
     /**

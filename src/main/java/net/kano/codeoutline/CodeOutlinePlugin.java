@@ -35,13 +35,23 @@
 
 package net.kano.codeoutline;
 
+import com.intellij.openapi.application.impl.LaterInvocator;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.ex.EditorEx;
+import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
+import com.intellij.openapi.fileEditor.FileEditorManagerListener;
+import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerAdapter;
+import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.NamedJDOMExternalizable;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import org.jdom.Element;
@@ -64,8 +74,7 @@ public class CodeOutlinePlugin
 
     private final CodeOutlinePrefs prefs = new CodeOutlinePrefs();
 
-    private final Map<Project, CodeOutlineToolWindow> windows
-            = new IdentityHashMap<Project, CodeOutlineToolWindow>();
+    private final Map<Project, CodeOutlineToolWindow> windows = new IdentityHashMap<Project, CodeOutlineToolWindow>();
 
     public @NotNull String getComponentName() { return "CodeOutlinePlugin"; }
 
@@ -102,13 +111,46 @@ public class CodeOutlinePlugin
      *
      * @param project the project to register
      */
-    private synchronized void regForProject(Project project) {
-        CodeOutlineToolWindow window = new CodeOutlineToolWindow(this, project);
+    private synchronized void regForProject(final Project project) {
+        final CodeOutlineToolWindow window = new CodeOutlineToolWindow(this, project);
 
         ToolWindowManager twm = ToolWindowManager.getInstance(project);
         twm.registerToolWindow(TOOLWINDOW_ID, window, ToolWindowAnchor.RIGHT);
 
         windows.put(project, window);
+
+        // Check whether selected file editor corresponds to needed core outline panel
+        // This is work around on selecting of last opened file editor at project startup by idea
+        StartupManager.getInstance(project).runWhenProjectIsInitialized(new Runnable() {
+            @Override public void run() {
+                LaterInvocator.invokeLater(new Runnable() {
+                    @Override public void run() {
+                        Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+                        if (editor != null) {
+                            final VirtualFile vFile = ((EditorEx)editor).getVirtualFile();
+                            final FileEditor fileEditor = FileEditorManager.getInstance(project).getSelectedEditor(vFile);
+                            CodeOutlinePanel panel = window.getPanel(fileEditor);
+                            if (panel != null && panel != window.getCurrentPanel()) {
+                                final FileEditorManager fileEditorManager = FileEditorManager.getInstance(
+                                    project);
+                                ((FileEditorManagerEx)fileEditorManager).notifyPublisher(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            final FileEditorManagerEvent event = new FileEditorManagerEvent(
+                                                fileEditorManager, vFile, fileEditor, vFile, fileEditor);
+                                            final FileEditorManagerListener
+                                                publisher = fileEditorManager.getProject().getMessageBus().syncPublisher(
+                                                FileEditorManagerListener.FILE_EDITOR_MANAGER);
+                                            publisher.selectionChanged(event);
+                                        }
+                                    });
+                            }
+                        }
+                    }
+                });
+            }
+        });
     }
 
     /**

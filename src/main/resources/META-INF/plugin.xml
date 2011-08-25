@@ -9,6 +9,7 @@
         + (Fixed in 0.5) Plugin does not work when running on Java 6 (JDK 6.0)
         + (Fixed in 0.5) Code Outline panel is not always rendered when open file or tab
         + (Fixed in 0.5) Exceptions when pointing to not existing place in code
+        + (Fixed in 0.5) Not current panel opened if not last tab selected when opening project
     </change-notes>
     <idea-version since-build="93.13"/>
     <application-components>
