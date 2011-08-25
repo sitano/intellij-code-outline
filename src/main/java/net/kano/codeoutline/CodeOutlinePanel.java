@@ -30,7 +30,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  *  File created by keith @ Oct 24, 2003
- *
+ *  Modified by John.Koepi
  */
 
 package net.kano.codeoutline;
@@ -665,19 +665,6 @@ public class CodeOutlinePanel extends JPanel {
     }
 
     /**
-     * Highlights the line specified by <code>lastMousePoint</code>. This method
-     * does nothing if <code>lastMousePoint</code> is <code>null</code>.
-     */
-    private void highlightCurrentLine() {
-        if (lastMousePoint == null) return;
-        
-        clearHighlightedLine();
-        MarkupModel mm = editor.getMarkupModel();
-        highlighter = mm.addLineHighlighter(lastMousePoint.y, 100,
-                CURRENTLINE_ATTRIBUTES);
-    }
-
-    /**
      * Resets the last mouse point field and erases any highlighted line.
      */
     private synchronized void mouseout() {
@@ -687,12 +674,24 @@ public class CodeOutlinePanel extends JPanel {
     }
 
     /**
-     * Erases the highlighting for the currently highlighted line.
+     * Currently scale factor is static 1:1
      */
-    private void clearHighlightedLine() {
-        if (highlighter != null) {
-            editor.getMarkupModel().removeHighlighter(highlighter);
-            highlighter = null;
+    private int getLineFromMousePointY(int mousePointY) {
+        return mousePointY;
+    }
+    
+    /**
+     * Highlights the line specified by <code>lastMousePoint</code>. This method
+     * does nothing if <code>lastMousePoint</code> is <code>null</code>.
+     */
+    private void highlightCurrentLine() {
+        if (lastMousePoint == null) return;
+
+        clearHighlightedLine();
+        MarkupModel mm = editor.getMarkupModel();
+        int line = getLineFromMousePointY(lastMousePoint.y);
+        if (line >= 0 && line < editor.getDocument().getLineCount()) {
+            highlighter = mm.addLineHighlighter(line, 100, CURRENTLINE_ATTRIBUTES);
         }
     }
 
@@ -706,6 +705,16 @@ public class CodeOutlinePanel extends JPanel {
             highlightCurrentLine();
         } else {
             clearHighlightedLine();
+        }
+    }
+
+    /**
+     * Erases the highlighting for the currently highlighted line.
+     */
+    private void clearHighlightedLine() {
+        if (highlighter != null) {
+            editor.getMarkupModel().removeHighlighter(highlighter);
+            highlighter = null;
         }
     }
 

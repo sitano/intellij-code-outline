@@ -3,12 +3,12 @@
     <id>CodeOutline2</id>
     <name>Code Outline 2</name>
     <description>Shows a zoomed out "outline" of your code while you're editing it.</description>
-    <version>1.0</version>
+    <version>0.5</version>
     <vendor email="john.koepi@gmail.com">Ivan</vendor>
     <change-notes>
-        Since 1.0:
-            - Support for JDK6 (fixed bug NoClassMethodFound Exception)
-            - No panel rendering when open projects and new files
+        + (Fixed in 0.5) Plugin does not work when running on Java 6 (JDK 6.0)
+        + (Fixed in 0.5) Code Outline panel is not always rendered when open file or tab
+        + (Fixed in 0.5) Exceptions when pointing to not existing place in code
     </change-notes>
     <idea-version since-build="93.13"/>
     <application-components>

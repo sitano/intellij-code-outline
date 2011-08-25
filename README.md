@@ -20,13 +20,25 @@ General usage instructions:
  * Right mouse button: Popup menu / preferences
  * Mouse wheel: Scroll page up/down
 
+Features requests:
+------------------
+ - Render for breakpoint and bookmarks
+ - Soft scroll
+ - Cursor rendering as hl line
+ - Forbid hozirontal scroll
+
 Known bugs:
 -----------
- + (Fixed in 1.0) Plugin does not work when running on Java 6 (JDK 6.0)
- + (Fixed in 1.0) Code Outline panel is not always rendered when open file or tab
- - Exceptions when pointing to not existing place in code
+ + (Fixed in 0.5) Plugin does not work when running on Java 6 (JDK 6.0)
+ + (Fixed in 0.5) Code Outline panel is not always rendered when open file or tab
+ + (Fixed in 0.5) Exceptions when pointing to not existing place in code
+ - Windows jumps randomly when dragged when text too width
+ - Not current panel opened if not last tab selected when opening project
+ - Resizing Code Outline panel consume a lot of CPU cause repainted every tick
+ 
  - Scale outline when it's too tall to fit
  - Plugin not deal well with deleting large amounts of text when file is too large
+ 
  - Rotate or wrap outline when toolwindow is moved to top or bottom
  - Use user's color settings for selection, background, etc
  - Problems when closing tab groups
