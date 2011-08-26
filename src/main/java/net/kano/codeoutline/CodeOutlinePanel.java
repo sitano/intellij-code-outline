@@ -464,7 +464,8 @@ public class CodeOutlinePanel extends JPanel {
     private void seekTo(Point point, boolean animate, boolean insideCollapsed) {
         LogicalPosition pos = image.getPositionFromPoint(point);
         int offset = getEndOfLineOffset(pos);
-        seekTo(offset, animate, insideCollapsed);
+        seekTo(offset, insideCollapsed);
+        scrollTo(pos, animate);
     }
 
     /**
@@ -476,12 +477,10 @@ public class CodeOutlinePanel extends JPanel {
      * ends.
      *
      * @param offset the offset to set as the new caret position
-     * @param animate whether any scrolling involved in seeking should be
-     *        animated
      * @param insideCollapsed whether the cursor should be placed within
      *        collapsed folding regions
      */
-    private void seekTo(int offset, boolean animate, boolean insideCollapsed) {
+    private void seekTo(int offset, boolean insideCollapsed) {
         FoldingModel fm = editor.getFoldingModel();
         if (!insideCollapsed && fm.isOffsetCollapsed(offset)) {
             // we need to find a nearby offset which is not inside a collapsed
@@ -498,7 +497,6 @@ public class CodeOutlinePanel extends JPanel {
         }
 
         editor.getCaretModel().moveToOffset(offset);
-        scrollToCaret(animate);
     }
 
     /**
@@ -611,7 +609,22 @@ public class CodeOutlinePanel extends JPanel {
         boolean cut = shouldCut(animate);
         try {
             if (cut) sm.disableAnimation();
-            sm.scrollTo(pos, ScrollType.CENTER);
+            // Handy centring by x-axis
+            // This is work around for use of MAKE_VISIBLE
+            Point targetPoint = editor.logicalPositionToXY(pos);
+            int viewX = sm.getVisibleArea().x;
+            int viewWidth = sm.getVisibleArea().width;
+            int deltaX = targetPoint.x - (viewX + viewWidth / 2);
+            if (deltaX > 0) {
+                LogicalPosition pos2 = editor.xyToLogicalPosition(new Point(viewX + viewWidth + deltaX, 0));
+                pos = new LogicalPosition(pos.line, pos2.column - 5);
+            } else {
+                int newX = Math.max(0, viewX + deltaX);
+                LogicalPosition pos2 = editor.xyToLogicalPosition(new Point(newX, 0));
+                pos = new LogicalPosition(pos.line, pos2.column + 5);
+            }
+            // Don't know why MAKE_CENTER does wrong.
+            sm.scrollTo(pos, ScrollType.MAKE_VISIBLE);
         } finally {
             if (cut) sm.enableAnimation();
         }

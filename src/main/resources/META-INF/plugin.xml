@@ -1,5 +1,5 @@
 <!DOCTYPE idea-plugin PUBLIC "" "http://plugins.intellij.net/plugin.dtd">
-<idea-plugin url="http://code.google.com/p/intellij-code-outline/">
+<idea-plugin url="https://github.com/sitano/intellij-code-outline/">
     <id>CodeOutline2</id>
     <name>Code Outline 2</name>
     <description>Shows a zoomed out "outline" of your code while you're editing it.</description>
@@ -10,6 +10,7 @@
         + (Fixed in 0.5) Code Outline panel is not always rendered when open file or tab
         + (Fixed in 0.5) Exceptions when pointing to not existing place in code
         + (Fixed in 0.5) Not current panel opened if not last tab selected when opening project
+        + (Fixed in 0.5) Windows jumps randomly when dragged when text too width and horizontal offset.
     </change-notes>
     <idea-version since-build="93.13"/>
     <application-components>

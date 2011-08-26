@@ -22,10 +22,15 @@ General usage instructions:
 
 Features requests:
 ------------------
+ + (Fixed 0.5) Soft scroll
+ - Scale outline when it's too tall to fit
+ - Plugin not deal well with deleting large amounts of text when file is too large
  - Render for breakpoint and bookmarks
- - Soft scroll
  - Cursor rendering as hl line
- - Forbid hozirontal scroll
+ - Rotate or wrap outline when toolwindow is moved to top or bottom
+ - Use user's color settings for selection, background, etc
+ - Highlight highlighted regions
+ - Show syntax coloring in outline
 
 Known bugs:
 -----------
@@ -33,20 +38,15 @@ Known bugs:
  + (Fixed in 0.5) Code Outline panel is not always rendered when open file or tab
  + (Fixed in 0.5) Exceptions when pointing to not existing place in code
  + (Fixed in 0.5) Not current panel opened if not last tab selected when opening project
- - Windows jumps randomly when dragged when text too width
- - Resizing Code Outline panel consume a lot of CPU cause repainted every tick
- 
- - Scale outline when it's too tall to fit
- - Plugin not deal well with deleting large amounts of text when file is too large
- 
- - Rotate or wrap outline when toolwindow is moved to top or bottom
- - Use user's color settings for selection, background, etc
- - Problems when closing tab groups
+ + (Not a bug) Resizing Code Outline panel consume a lot of CPU cause repainted every tick.
+   Repainting code is not regenerating img every scrollable area changed event occurred, but
+   when resizing involves changes in visible empty area. It changes img height. This flow
+   exists cause there is no scaling of rendered source.
+ + (Fixed in 0.5) Windows jumps randomly when dragged when text too width and horizontal offset.
  - Visible region draws incorrectly when first and last line visible in editor are both folded
+ - Problems when closing tab groups
  - Does not draw column-mode (rectangular) selection correctly
- - Hide folded code
- - Highlight highlighted regions
- - Show syntax coloring in outline
+ - Seeking in folding areas (unfold)
 
 IntelliJ IDEA debug note:
 -------------------------
