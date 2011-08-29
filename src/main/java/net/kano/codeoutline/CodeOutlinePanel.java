@@ -621,7 +621,7 @@ public class CodeOutlinePanel extends JPanel {
             } else {
                 int newX = Math.max(0, viewX + deltaX);
                 LogicalPosition pos2 = editor.xyToLogicalPosition(new Point(newX, 0));
-                pos = new LogicalPosition(pos.line, pos2.column + 5);
+                pos = new LogicalPosition(pos.line, pos2.column);
             }
             // Don't know why MAKE_CENTER does wrong.
             sm.scrollTo(pos, ScrollType.MAKE_VISIBLE);
