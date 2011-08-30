@@ -81,6 +81,8 @@ public class CodeOutlineImage {
     private int visibleImgWidth = 0;
     /** The height of the image visible to the user. */
     private int visibleImgHeight = 0;
+    /** Vertical scale factor */
+    private double scale = 1.0;
 
     /** A letter thickness manager. */
     private final LetterThicknessManager thicks;
@@ -306,8 +308,7 @@ public class CodeOutlineImage {
                     width-toClear, 1, emptyLine);
             // re-render the last line, since we don't know what the data on
             // that line was, since it was past our right margin
-            int renderWidth = renderRestOfLineToImg(
-                    offset + newLength + minCharsToCopy);
+            int renderWidth = renderRestOfLineToImg(offset + newLength + minCharsToCopy);
             int clearx = newend.column + minCharsToCopy + renderWidth;
             if (clearx < width) {
                 raster.setDataElements(clearx, newend.line,
@@ -352,7 +353,7 @@ public class CodeOutlineImage {
 
             if (col >= visibleImgWidth) break;
 
-            drawChar(ch, col, line);
+            drawChar(ch, col, line, scale);
             painted++;
             col++;
         }
@@ -365,11 +366,12 @@ public class CodeOutlineImage {
      * @param ch the character to render
      * @param col the column number
      * @param line the line number
+     * @param scale scale factor
      */
-    private void drawChar(char ch, int col, int line) {
+    private void drawChar(char ch, int col, int line, double scale) {
         if (!Character.isWhitespace(ch)) {
             int thickness = thicks.getThickness(ch);
-            img.setRGB(col, line, thickness << 24);
+            img.setRGB(col, getScaledLine(line, scale), thickness << 24);
         }
     }
 
@@ -419,14 +421,12 @@ public class CodeOutlineImage {
             // this region is past the end of the file, so we repaint the entire
             // area below the end of the file
             LogicalPosition eof = editor.offsetToLogicalPosition(len);
-            return new Rectangle(0, eof.line,
-                    visibleImgWidth +1, visibleImgHeight-eof.line+1);
+            return getRectangle(0, eof.line, visibleImgWidth + 1, visibleImgHeight-eof.line + 1, scale);
         } else {
             start = editor.offsetToLogicalPosition(startoff);
             if (endoff > len) {
                 // the region spans the end of the file
-                return new Rectangle(0, start.line,
-                        visibleImgWidth+1, visibleImgHeight-start.line+1);
+                return getRectangle(0, start.line, visibleImgWidth + 1, visibleImgHeight-start.line + 1, scale);
             }
         }
 
@@ -434,11 +434,10 @@ public class CodeOutlineImage {
 
         if (start.line == end.line) {
             // we only need to repaint the characters modified on that line
-            return new Rectangle(start.column, start.line,
-                    visibleImgWidth+1, end.line+1);
+            return getRectangle(start.column, start.line, visibleImgWidth + 1, end.line + 1, scale);
         } else {
             // we should repaint the entire lines that changed
-            return new Rectangle(0, start.line, visibleImgWidth+1, end.line+1);
+            return getRectangle(0, start.line, visibleImgWidth + 1, end.line + 1, scale);
         }
     }
 
@@ -479,6 +478,7 @@ public class CodeOutlineImage {
         // messes up when collapsed folding regions are present on the first and
         // last visible lines.
         Rectangle visibleRect;
+
         LogicalPosition start = editor.xyToLogicalPosition(
                 new Point(visible.x, visible.y));
         LogicalPosition start2 = editor.xyToLogicalPosition(
@@ -490,7 +490,9 @@ public class CodeOutlineImage {
         int w = Math.min(visibleImgWidth-start.column,
                 Math.max(start2.column, end.column)-start.column)-1;
         int h = end.line-start.line;
-        visibleRect = new Rectangle(start.column, start.line, w, h);
+
+        visibleRect = getRectangle(start.column, start.line, w, h, scale);
+
         return visibleRect;
     }
 
@@ -563,6 +565,76 @@ public class CodeOutlineImage {
         }
     }
 
+    public static Rectangle getRectangle(int x, int y, int width, int height, double scale) {
+        return new Rectangle(x, getScaledLine(y, scale), width, getScaledLine(height, scale));
+    }
+    
+    public int getScaledLine(int line) {
+        return getScaledLine(line, scale);
+    }
+
+    public static int getScaledLine(int line, double scale) {
+        return (int)Math.floor(scale * line);
+    }
+    
+    public static int offsetLineForScale(int line, int offset, double scale) {
+        return (int)Math.floor((Math.floor(scale * line) + offset) / scale);
+    }
+
+    private static double getScaleFactor(int height, int lines) {
+        double scale = 1.0 * height / lines;
+        if (scale > 1.0) scale = 1000.0;
+        else scale = Math.floor(scale * 1000.0) + 1.0;
+        return scale / 1000.0;
+    }
+
+    public double getScale() {
+        return scale;
+    }
+
+    /**
+     * Renders the given characters to the code outline image starting at the
+     * given position.
+     *
+     * @param document render full document
+     * @param pos the position at which to start rendering
+     */
+    private void renderToImg(Document document, LogicalPosition pos) {
+        if (img == null) return;
+
+        CharSequence chars = document.getCharsSequence();
+        int lines = document.getLineCount(), len = chars.length();
+
+        double scale = getScaleFactor(visibleImgHeight, lines);
+        this.scale = scale;
+
+        int line = pos.line, col = pos.column;
+
+        // Render characters
+        for (int i = 0; i < len; i++) {
+            char ch = chars.charAt(i);
+
+            if (ch == '\n') {
+                line++;
+
+                if (getScaledLine(line, scale) >= visibleImgHeight) break;
+                col = 0;
+            } else {
+                if (col >= visibleImgWidth)
+                    continue;
+
+                if (ch == ' ' && getScaledLine(line, scale) == getScaledLine(
+                    line - 1, scale))
+                    continue;
+
+                drawChar(ch, col, line, scale);
+
+                col++;
+            }
+        }
+    }
+
+
     /**
      * Renders the given characters to the code outline image starting at the
      * given position.
@@ -572,12 +644,14 @@ public class CodeOutlineImage {
      * @param len the number of characters to render
      * @param pos the position at which to start rendering
      */
-    private void renderToImg(CharSequence chars, int offset, int len,
-            LogicalPosition pos) {
+    private void renderToImg(CharSequence chars, int offset, int len, LogicalPosition pos) {
         if (img == null) return;
 
         int line = pos.line;
         int col = pos.column;
+        double scale = this.scale;
+
+        // Render characters
         for (int i = offset; i < len; i++) {
             char ch = chars.charAt(i);
 
@@ -589,7 +663,7 @@ public class CodeOutlineImage {
             } else {
                 if (col >= visibleImgWidth) continue;
 
-                drawChar(ch, col, line);
+                drawChar(ch, col, line, scale);
                 col++;
             }
         }
@@ -609,8 +683,10 @@ public class CodeOutlineImage {
         if (emptyLine == null || visibleImgWidth != width) {
             emptyLine = genColoredLine(width, COLORMASK_TRANSPARENT);
         }
+
         visibleImgWidth = width;
         visibleImgHeight = height;
+
         if (img == null || img.getWidth() < width || img.getHeight() < height) {
             if (img != null) {
                 // clear out the old image data
@@ -651,9 +727,7 @@ public class CodeOutlineImage {
      * Renders the text in the editor to the backing image.
      */
     private void genImage() {
-        CharSequence chars = document.getCharsSequence();
-
-        renderToImg(chars, 0, document.getTextLength(), LOGPOS_START);
+        renderToImg(document, LOGPOS_START);
     }
 
     /**

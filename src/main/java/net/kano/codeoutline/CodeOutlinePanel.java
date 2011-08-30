@@ -738,21 +738,44 @@ public class CodeOutlinePanel extends JPanel {
      * @param from the starting position
      * @param to the ending position
      */
-    private void drawSelection(Graphics2D g, LogicalPosition from,
-            LogicalPosition to) {
+    private void drawSelection(Graphics2D g, LogicalPosition from, LogicalPosition to) {
         int toFillStart;
+        double scale = image.getScale();
+
         if (from.line == to.line) toFillStart = to.column-from.column;
         else toFillStart = getWidth() - from.column;
-        g.drawLine(from.column, from.line, from.column+toFillStart,
-                from.line);
+        // Start to draw first line of selected block ....[----
+        drawLine(g, from.column, from.line, from.column + toFillStart, from.line, scale);
 
-        int linediff = Math.abs(from.line - to.line);
-        if (linediff >= 2) {
-            g.fillRect(0, from.line+1, getWidth(), to.line-from.line-1);
+        int lineDiff = Math.abs(from.line - to.line);
+        if (lineDiff >= 2) {
+            fillRectNotZero(g, 0, from.line + 1, getWidth(),
+                to.line - from.line - 1, scale);
+            // Draw finish line at next line of bottom of the box
+            int toLine =
+                CodeOutlineImage.getScaledLine(from.line + 1, scale) +
+                CodeOutlineImage.getScaledLine(to.line - from.line - 1, scale);
+            g.drawLine(0, toLine, to.column, toLine);
+        } else if (from.line != to.line) {
+            // Next line overlaps with to.line, to get next line and draw it (to prevent hiding)
+            int fromLine = CodeOutlineImage.getScaledLine(from.line, scale);
+            g.drawLine(0, fromLine + 1, to.column, fromLine + 1);
         }
-        if (from.line != to.line) {
-            g.drawLine(0, to.line, to.column, to.line);
-        }
+    }
+
+    public void fillRectNotZero(Graphics2D g, int x, int y, int width, int height, double scale) {
+        y = image.getScaledLine(y, scale);
+        height = image.getScaledLine(height, scale);
+        if (height < 1) height = 1;
+        g.fillRect(x, y, width, height);
+    }
+
+    public void fillRect(Graphics2D g, int x, int y, int width, int height, double scale) {
+        g.fillRect(x, image.getScaledLine(y, scale), width, image.getScaledLine(height, scale));
+    }
+
+    public void drawLine(Graphics2D g, int x1, int y1, int x2, int y2, double scale) {
+        g.drawLine(x1, image.getScaledLine(y1, scale), x2, image.getScaledLine(y2, scale));
     }
 
     /**
@@ -796,10 +819,8 @@ public class CodeOutlinePanel extends JPanel {
         // draw the selection
         SelectionModel sm = editor.getSelectionModel();
         if (sm.hasSelection()) {
-            LogicalPosition sstart
-                    = editor.offsetToLogicalPosition(sm.getSelectionStart());
-            LogicalPosition send
-                    = editor.offsetToLogicalPosition(sm.getSelectionEnd());
+            LogicalPosition sstart = editor.offsetToLogicalPosition(sm.getSelectionStart());
+            LogicalPosition send  = editor.offsetToLogicalPosition(sm.getSelectionEnd());
 
             g.setColor(Color.BLUE);
             drawSelection(g, sstart, send);
