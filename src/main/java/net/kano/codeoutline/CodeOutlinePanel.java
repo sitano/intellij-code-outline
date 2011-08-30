@@ -178,6 +178,11 @@ public class CodeOutlinePanel extends JPanel {
 
         public void mousePressed(MouseEvent e) {
             Point point = e.getPoint();
+            
+            double scale = image.getScale();
+            if (scale < 1.0) {
+                point = new Point(point.x, CodeOutlineImage.getOutScaledLine(point.y, scale));
+            }
 
             if (SwingUtilities.isLeftMouseButton(e)) {
                 // left mouse button always moves the cursor to the clicked
@@ -247,6 +252,12 @@ public class CodeOutlinePanel extends JPanel {
                 // is finalized and the cursor goes to the specified mouse
                 // position
                 Point point = e.getPoint();
+
+                double scale = image.getScale();
+                if (scale < 1.0) {
+                    point = new Point(point.x, CodeOutlineImage.getOutScaledLine(point.y, scale));
+                }
+
                 seekTo(point, true, e.isShiftDown());
 
                 updateSelection(point, false);
@@ -283,6 +294,11 @@ public class CodeOutlinePanel extends JPanel {
             = new MouseMotionListener() {
         public void mouseDragged(MouseEvent e) {
             Point point = e.getPoint();
+
+            double scale = image.getScale();
+            if (scale < 1.0) {
+                point = new Point(point.x, CodeOutlineImage.getOutScaledLine(point.y, scale));
+            }
 
             // the currently hovered line needs to be updated
             mouseover(point);

@@ -573,12 +573,12 @@ public class CodeOutlineImage {
         return getScaledLine(line, scale);
     }
 
+    public static int getOutScaledLine(int line, double scale) {
+        return (int)(1.0 * line / scale);
+    }
+
     public static int getScaledLine(int line, double scale) {
         return (int)Math.floor(scale * line);
-    }
-    
-    public static int offsetLineForScale(int line, int offset, double scale) {
-        return (int)Math.floor((Math.floor(scale * line) + offset) / scale);
     }
 
     private static double getScaleFactor(int height, int lines) {
