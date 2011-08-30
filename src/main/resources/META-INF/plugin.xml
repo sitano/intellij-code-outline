@@ -11,6 +11,7 @@
         + (Fixed in 0.5) Exceptions when pointing to not existing place in code
         + (Fixed in 0.5) Not current panel opened if not last tab selected when opening project
         + (Fixed in 0.5) Windows jumps randomly when dragged when text too width and horizontal offset.
+        + (Fixed in 0.5) Scale outline when it's too tall to fit
     </change-notes>
     <idea-version since-build="93.13"/>
     <application-components>

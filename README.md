@@ -23,7 +23,7 @@ General usage instructions:
 Features requests:
 ------------------
  + (Fixed 0.5) Soft scroll
- - Scale outline when it's too tall to fit
+ + (Fixed 0.5) Scale outline when it's too tall to fit
  - Plugin not deal well with deleting large amounts of text when file is too large
  - Render for breakpoint and bookmarks
  - Cursor rendering as hl line
