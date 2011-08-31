@@ -11,9 +11,9 @@ Requirements:
 
 Download:
 ---------
-    Latest version of [Code Outline 2]. Place this file into your IntelliJ IDEA plugin folder.
+ Latest version of [Code Outline 2]. Place this file into your IntelliJ IDEA plugin folder.
 
-    [Code Outline 2]: https://github.com/sitano/intellij-code-outline/blob/master/release/CodeOutlinePlugin-0.5-pre1.jar
+ [Code Outline 2]: https://github.com/sitano/intellij-code-outline/blob/master/release/CodeOutlinePlugin-0.5-pre1.jar
 
 General usage instructions:
 ---------------------------
