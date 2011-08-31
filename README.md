@@ -9,6 +9,12 @@ Requirements:
 -------------
  IntelliJ IDEA 9/10/11 and JDK6, 7
 
+Download:
+---------
+    Last version of [Code Outline 2 0.5-pre1][]. Place this file into your IntelliJ IDEA plugin folder.
+
+    [Code Outline 2 0.5-pre1]: https://github.com/sitano/intellij-code-outline/blob/master/release/CodeOutlinePlugin-0.5-pre1.jar
+
 General usage instructions:
 ---------------------------
  * Left mouse button: Go to position in file (do not expand fold region)
