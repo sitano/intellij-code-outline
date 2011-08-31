@@ -9,9 +9,9 @@ Requirements:
 -------------
  IntelliJ IDEA 9/10/11 and JDK6, 7
 
-Download:
+Usage:
 ---------
- Latest version of [Code Outline 2]. Place this file into your IntelliJ IDEA plugin folder.
+ Download latest version of [Code Outline 2]. Place this file into your IntelliJ IDEA plugin folder.
 
  [Code Outline 2]: https://github.com/sitano/intellij-code-outline/blob/master/release/CodeOutlinePlugin-0.5-pre1.jar
 
@@ -42,7 +42,7 @@ Known bugs:
  + (Fixed in 0.5) Plugin does not work when running on Java 6 (JDK 6.0)
  + (Fixed in 0.5) Code Outline panel is not always rendered when open file or tab
  + (Fixed in 0.5) Exceptions when pointing to not existing place in code
- - Not current panel opened if not last tab selected when opening project
+ + (Fixed in 0.5) Not current panel opened if not last tab selected when opening project
  + (Not a bug) Resizing Code Outline panel consume a lot of CPU cause repainted every tick.
    Repainting code is not regenerating img every scrollable area changed event occurred, but
    when resizing involves changes in visible empty area. It changes img height. This flow

@@ -35,6 +35,7 @@
 
 package net.kano.codeoutline;
 
+import com.intellij.openapi.application.impl.LaterInvocator;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -43,8 +44,13 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
 import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.fileEditor.TextEditor;
+import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.openapi.wm.ex.ToolWindowManagerListener;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.JPanel;
 import java.awt.GridBagConstraints;
@@ -77,6 +83,42 @@ public class CodeOutlineToolWindow extends JPanel {
 
     private Map<FileEditor, CodeOutlinePanel> editor2panel = new IdentityHashMap<FileEditor, CodeOutlinePanel>();
     private Map<VirtualFile, CodeOutlinePanel> file2panel = new IdentityHashMap<VirtualFile, CodeOutlinePanel>();
+
+    private final ToolWindowManagerListener toolWindowManagerListener = new ToolWindowManagerListener() {
+        @Override
+        public void toolWindowRegistered(@NotNull String id) { }
+
+        @Override
+        public void stateChanged() {
+            ToolWindowManager twm = ToolWindowManager.getInstance(project);
+            String activeToolWindowId = twm.getActiveToolWindowId();
+            if (activeToolWindowId != null && activeToolWindowId.equals(CodeOutlinePlugin.TOOLWINDOW_ID)) {
+                ToolWindow tw = twm.getToolWindow(activeToolWindowId);
+                if (tw.isVisible()) {
+                    Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+                    if (editor != null) {
+                        final VirtualFile vFile = ((EditorEx) editor).getVirtualFile();
+                        final FileEditor fileEditor = FileEditorManager.getInstance(project).getSelectedEditor(vFile);
+                        CodeOutlinePanel panel = getPanel(fileEditor);
+                        if (panel != null && panel != getCurrentPanel()) {
+                            final FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
+                            ((FileEditorManagerEx) fileEditorManager).notifyPublisher(new Runnable() {
+                                @Override
+                                public void run() {
+                                    final FileEditorManagerEvent event = new FileEditorManagerEvent(
+                                            fileEditorManager, vFile, fileEditor, vFile, fileEditor);
+                                    final FileEditorManagerListener
+                                            publisher = fileEditorManager.getProject().getMessageBus().syncPublisher(
+                                            FileEditorManagerListener.FILE_EDITOR_MANAGER);
+                                    publisher.selectionChanged(event);
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        }
+    };
 
     /**
      * An editor listener for the given project, to create and destroy code
@@ -236,4 +278,8 @@ public class CodeOutlineToolWindow extends JPanel {
      * @return the parent code outline plugin
      */
     public CodeOutlinePlugin getPlugin() { return plugin; }
+
+    public ToolWindowManagerListener getToolWindowManagerListener() {
+        return toolWindowManagerListener;
+    }
 }
