@@ -26,31 +26,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>enforce-java</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <rules>
-                        <requireJavaVersion>
-                            <!-- require JDK 1.5 to run the build -->
-                            <version>[1.6,)</version>
-                        </requireJavaVersion>
-                        <requireMavenVersion>
-                            <!-- we need at least Maven 2.0.8 because of a bug fix affecting our antlr usage -->
-                            <!-- 2.0.8 not released at this time, so I instead say anything greater that 2.0.7 -->
-                            <version>(2.0.7,)</version>
-                        </requireMavenVersion>
-                    </rules>
-                </configuration>
-            </plugin>
-            <plugin>
                 <inherited>true</inherited>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -119,7 +94,32 @@
         <dependency>
             <groupId>com.intellij</groupId>
             <artifactId>openapi</artifactId>
-            <version>7.0.3</version>
+            <version>10.8-snapshot</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>idea-openapi</artifactId>
+            <version>10.8-snapshot</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>util-openapi</artifactId>
+            <version>10.8-snapshot</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>ext-openapi</artifactId>
+            <version>10.8-snapshot</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>annotations</artifactId>
+            <version>9.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>jdom</groupId>
+            <artifactId>jdom</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 </project>
