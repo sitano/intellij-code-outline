@@ -7,7 +7,7 @@ Shows a zoomed out "outline" of your code while you're editing it.
 
 Requirements:
 -------------
- IntelliJ IDEA 9 (and greater) and JDK6, 7
+ IntelliJ IDEA 9/10/11 and JDK6, 7
 
 General usage instructions:
 ---------------------------
@@ -22,9 +22,8 @@ General usage instructions:
 
 Features requests:
 ------------------
- + (Fixed 0.5) Soft scroll
+ + (Fixed 0.5) Soft horizontal scroll
  + (Fixed 0.5) Scale outline when it's too tall to fit
- - Plugin not deal well with deleting large amounts of text when file is too large
  - Render for breakpoint and bookmarks
  - Cursor rendering as hl line
  - Rotate or wrap outline when toolwindow is moved to top or bottom
@@ -43,6 +42,7 @@ Known bugs:
    when resizing involves changes in visible empty area. It changes img height. This flow
    exists cause there is no scaling of rendered source.
  + (Fixed in 0.5) Windows jumps randomly when dragged when text too width and horizontal offset.
+ ? (Not Resolved) Plugin not deal well with deleting large amounts of text when file is too large
  - Visible region draws incorrectly when first and last line visible in editor are both folded
  - Problems when closing tab groups
  - Does not draw column-mode (rectangular) selection correctly

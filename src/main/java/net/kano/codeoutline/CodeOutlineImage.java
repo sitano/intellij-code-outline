@@ -30,7 +30,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  *  File created by keith @ Oct 25, 2003
- *
+ *  Modified by John.Koepi
  */
 
 package net.kano.codeoutline;
@@ -42,6 +42,7 @@ import com.intellij.openapi.editor.ScrollingModel;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.openapi.wm.impl.commands.InvokeLaterCmd;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -108,8 +109,7 @@ public class CodeOutlineImage {
             // before the change, the logical position of offset 10 was line 0,
             // column 10. after the change, though, the logical position of
             // offset 10 is line 1, column 9.
-            oldend = editor.offsetToLogicalPosition(
-                    event.getOffset() + event.getOldLength());
+            oldend = editor.offsetToLogicalPosition(event.getOffset() + event.getOldLength());
         }
 
         public void documentChanged(DocumentEvent e) {
@@ -167,25 +167,24 @@ public class CodeOutlineImage {
      * @param oldend the logical position of the end of the "old" changed region
      *        before the change was actually made
      */
-    private synchronized void updateImg(DocumentEvent e,
-            LogicalPosition oldend) {
+    private synchronized void updateImg(DocumentEvent e, LogicalPosition oldend) {
         // if there's no image we don't need to do anything
         if (img == null) return;
 
-        int offset = e.getOffset();
+        int offset    = e.getOffset();
         int newLength = e.getNewLength();
         int oldLength = e.getOldLength();
-        int width = visibleImgWidth;
-        int height = visibleImgHeight;
+        int width     = visibleImgWidth;
+        int height    = visibleImgHeight;
+        double scale  = this.scale;
 
         // compute the logical positions of the old and new offsets
         LogicalPosition start = editor.offsetToLogicalPosition(offset);
-        LogicalPosition newend = editor.offsetToLogicalPosition(
-                offset + newLength);
+        LogicalPosition newend = editor.offsetToLogicalPosition(offset + newLength);
 
         // if the modifications were all past the bottom border, there's nothing
         // to do
-        if (start.line >= height) return;
+        if (getScaledLine(start.line, scale) >= height) return;
 
         // the number of affected lines
         int affected = Math.abs(newend.line - oldend.line) + 1;
@@ -196,6 +195,20 @@ public class CodeOutlineImage {
 
         // the number of lines added (a negative value means lines were removed)
         int addedLines = newend.line - oldend.line;
+
+        /*
+         * If lines count changed, then redraw all the stuff if there are:
+         * 1. deleted lines
+         * 2. scale factor changed (scaling)
+         */
+        if (addedLines != 0) {
+            if (addedLines < 0 || scale < 1.0 || getScaleFactor(height, document.getLineCount()) < 1.0) {
+                refreshImage();
+                // TODO: Delayed redraw for last timed out change
+                listener.shouldRepaint(this, new Rectangle(0, 0, width, height));
+                return;
+            }
+        }
 
         /*
 
@@ -220,23 +233,23 @@ public class CodeOutlineImage {
         // new end of the last line (this takes into account how much is there,
         // and how much space there is at the end of the new line, so no unused
         // data is copied)
-        int charsToCopy = Math.min(needsFilling,
-                Math.max(0, width - oldend.column));
+        int charsToCopy = Math.min(needsFilling, Math.max(0, width - oldend.column));
 
         // copy the (unmodified) rest of the line at the end of the modified
         // region
         WritableRaster raster = img.getRaster();
         Object endOfLine = null;
-        if (oldend.line < height && newend.line < height && charsToCopy > 0) {
-            endOfLine = raster.getDataElements(oldend.column, oldend.line,
-                    charsToCopy, 1, null);
+        int oldEndLine = getScaledLine(oldend.line, scale);
+        int newEndLine = getScaledLine(newend.line, scale);
+        if (oldEndLine < height && newEndLine < height && charsToCopy > 0) {
+            endOfLine = raster.getDataElements(oldend.column, oldEndLine, charsToCopy, 1, null);
         }
 
         // move unaffected lines (all lines after the lines modified).
         // this never modifies any of the lines containing the modified text.
         if (addedLines != 0) {
-            int ol = oldend.line + 1;
-            int nl = newend.line + 1;
+            int ol = getScaledLine(oldend.line + 1, scale);
+            int nl = getScaledLine(newend.line + 1, scale);
 
             int fh = height - ol;
             int th = height - nl;
@@ -261,41 +274,37 @@ public class CodeOutlineImage {
         if (affected > 1) {
             toFill = width - Math.min(width, start.column);
         } else if (start.column < newend.column) {
-            toFill = Math.min(width - start.column,
-                    newend.column - start.column);
+            toFill = Math.min(width - start.column, newend.column - start.column);
         }
+
         if (toFill > 0) {
-            img.setRGB(start.column, start.line, toFill, 1, emptyLine, 0,
-                    toFill);
+            img.setRGB(start.column, getScaledLine(start.line, scale), toFill, 1, emptyLine, 0, toFill);
         }
 
         if (newend.line != start.line) {
             // 2.
-            int last = Math.min(newend.line, height-1) - 1;
+            int last = getScaledLine(Math.min(newend.line, height-1) - 1, scale);
 
-            for (int i = start.line + 1; i <= last; i++) {
+            for (int i = getScaledLine(start.line + 1, scale); i <= last; i++) {
                 img.setRGB(0, i, width, 1, emptyLine, 0, width);
             }
 
             // 3.
-            if (newend.line < height) {
+            if (newEndLine < height) {
                 int toFillEnd = Math.min(width, newend.column);
-                img.setRGB(0, newend.line, toFillEnd, 1, emptyLine, 0,
-                        toFillEnd);
+                img.setRGB(0, newEndLine, toFillEnd, 1, emptyLine, 0, toFillEnd);
             }
         }
 
         // 4.
         if (endOfLine != null) {
             // copy old end of line data to new end of line
-            raster.setDataElements(newend.column, newend.line, charsToCopy, 1,
-                    endOfLine);
+            raster.setDataElements(newend.column, newEndLine, charsToCopy, 1, endOfLine);
 
             // clear the rest of the line, if necessary
-            int diff = needsFilling-charsToCopy;
+            int diff = needsFilling - charsToCopy;
             if (diff > 0) {
-                img.setRGB(newend.column + charsToCopy, newend.line, diff, 1,
-                        emptyLine, 0, diff);
+                img.setRGB(newend.column + charsToCopy, newEndLine, diff, 1, emptyLine, 0, diff);
             }
         }
 
@@ -303,16 +312,14 @@ public class CodeOutlineImage {
         int minCharsToCopy = Math.max(0, charsToCopy);
         int missing = needsFilling - minCharsToCopy;
         if (missing > 0) {
-            int toClear = newend.column+minCharsToCopy;
-            raster.setDataElements(toClear, newend.line,
-                    width-toClear, 1, emptyLine);
+            int toClear = newend.column + minCharsToCopy;
+            raster.setDataElements(toClear, newEndLine, width - toClear, 1, emptyLine);
             // re-render the last line, since we don't know what the data on
             // that line was, since it was past our right margin
             int renderWidth = renderRestOfLineToImg(offset + newLength + minCharsToCopy);
             int clearx = newend.column + minCharsToCopy + renderWidth;
             if (clearx < width) {
-                raster.setDataElements(clearx, newend.line,
-                        width-clearx, 1, emptyLine);
+                raster.setDataElements(clearx, newEndLine, width-clearx, 1, emptyLine);
             }
         }
 
@@ -321,11 +328,11 @@ public class CodeOutlineImage {
         renderToImg(nc, 0, nc.length(), start);
 
         // repaint the changed region
-        Rectangle toRepaint = getImgRepaintRect(offset,
-                Math.max(newLength, oldLength));
+        Rectangle toRepaint = getImgRepaintRect(offset, Math.max(newLength, oldLength));
         if (affected > 1) {
             toRepaint.height = visibleImgHeight - toRepaint.y;
         }
+
         listener.shouldRepaint(this, toRepaint);
     }
 
@@ -398,7 +405,7 @@ public class CodeOutlineImage {
      *         update the given region
      */
     public Rectangle getImgRepaintRect(int offset, int length) {
-        return getImgRepaintRect(new TextRange(offset, offset+length));
+        return getImgRepaintRect(new TextRange(offset, offset + length));
     }
 
     /**
@@ -584,7 +591,7 @@ public class CodeOutlineImage {
     private static double getScaleFactor(int height, int lines) {
         double scale = 1.0 * height / lines;
         if (scale > 1.0) scale = 1000.0;
-        else scale = Math.floor(scale * 1000.0) + 1.0;
+        else scale = Math.floor(scale * 1000.0) - 1.0;
         return scale / 1000.0;
     }
 
@@ -623,10 +630,7 @@ public class CodeOutlineImage {
                 if (col >= visibleImgWidth)
                     continue;
 
-                if (ch == ' ' && getScaledLine(line, scale) == getScaledLine(
-                    line - 1, scale))
-                    continue;
-
+                // Whitespaces are skipped inside drawChar
                 drawChar(ch, col, line, scale);
 
                 col++;
@@ -658,12 +662,14 @@ public class CodeOutlineImage {
             if (ch == '\n') {
                 line++;
 
-                if (line >= visibleImgHeight) break;
+                if (getScaledLine(line, scale) >= visibleImgHeight) break;
                 col = 0;
             } else {
                 if (col >= visibleImgWidth) continue;
 
+                // Whitespaces are skipped inside drawChar
                 drawChar(ch, col, line, scale);
+
                 col++;
             }
         }
@@ -678,8 +684,7 @@ public class CodeOutlineImage {
      * @param width the minimum width of the image
      * @param height the minimum height of the image
      */
-    public synchronized void checkImage(GraphicsConfiguration gc,
-            int width, int height) {
+    public synchronized boolean checkImage(GraphicsConfiguration gc, int width, int height) {
         if (emptyLine == null || visibleImgWidth != width) {
             emptyLine = genColoredLine(width, COLORMASK_TRANSPARENT);
         }
@@ -695,19 +700,24 @@ public class CodeOutlineImage {
             }
 
             // we allow 40 pixels of resizing before generating a new image
-            if (gc == null) return;
+            if (gc == null) return false;
 
-            img = gc.createCompatibleImage(width+40, height+40,
-                    Transparency.TRANSLUCENT);
+            img = gc.createCompatibleImage(width + 40, height + 40, Transparency.TRANSLUCENT);
 
             refreshImage();
+
+            return true;
         } else {
             // if the viewing area is now larger than what we've been painting,
             // we should repaint the whole thing
             if (width > img.getWidth() || height > img.getHeight()) {
                 refreshImage();
+
+                return true;
             }
         }
+
+        return false;
     }
 
     /**
