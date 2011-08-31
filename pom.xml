@@ -1,0 +1,125 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>net.kano.outline</groupId>
+    <artifactId>CodeOutlinePlugin</artifactId>
+    <version>0.5-pre1</version>
+    <packaging>jar</packaging>
+
+    <name>Code Outline 2</name>
+    <description>Shows a zoomed out "outline" of your code while you're editing it.</description>
+    <inceptionYear>2011</inceptionYear>
+
+    <developers>
+        <developer>
+            <id>john.koepi</id>
+            <name>Ivan</name>
+            <email>john.koepi@gmail.com</email>
+        </developer>
+    </developers>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-java</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <rules>
+                        <requireJavaVersion>
+                            <!-- require JDK 1.5 to run the build -->
+                            <version>[1.6,)</version>
+                        </requireJavaVersion>
+                        <requireMavenVersion>
+                            <!-- we need at least Maven 2.0.8 because of a bug fix affecting our antlr usage -->
+                            <!-- 2.0.8 not released at this time, so I instead say anything greater that 2.0.7 -->
+                            <version>(2.0.7,)</version>
+                        </requireMavenVersion>
+                    </rules>
+                </configuration>
+            </plugin>
+            <plugin>
+                <inherited>true</inherited>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <outputDirectory>${basedir}/release</outputDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3.1</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                        </manifest>
+                        <!--<manifestEntries>
+                        </manifestEntries>-->
+                    </archive>
+                    <outputDirectory>${basedir}/release</outputDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <verbose>true</verbose>
+                    <fork>true</fork>
+                    <compilerVersion>1.6</compilerVersion>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <!--<plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>ideauidesigner-maven-plugin</artifactId>
+                <executions>
+                   <execution>
+                      <goals>
+                         <goal>javac2</goal>
+                      </goals>
+                   </execution>
+                </executions>
+                <configuration>
+                  <fork>true</fork>
+                  <debug>true</debug>
+                  <verbose>true</verbose>
+                  <failOnError>true</failOnError>
+                </configuration>
+            </plugin>-->
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>openapi</artifactId>
+            <version>7.0.3</version>
+        </dependency>
+    </dependencies>
+</project>

@@ -1,0 +1,22 @@
+Known issues:
+ * Does not scale image when file is too long (too tall) to fit
+ * Does not deal well with deleting large amounts of text when file is too
+   long to fit
+ * Only useful as tool window on right and left; should be rotated when on
+   top or bottom
+ * Does not use IDEA's colors
+ * Has problems when closing tab groups (to fix, switch to another editor
+   then back to previous editor)
+
+Due to problems in plugin API:
+
+ * Visible region draws incorrectly when first and last line visible in
+   editor are both folded
+
+Due to insufficient plugin API (or maybe I'm just dumb and can't find things):
+
+ * Does not draw column-mode (rectangular) selection correctly
+ * Does not hide folded regions
+ * Does not highlight highlighted regions (like breakpoints, Highlight
+   Usages results)
+ * Does not show syntax coloring
