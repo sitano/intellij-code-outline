@@ -6,12 +6,22 @@
     <version>0.5</version>
     <vendor email="john.koepi@gmail.com">Ivan</vendor>
     <change-notes>
-        + (Fixed in 0.5) Plugin does not work when running on Java 6 (JDK 6.0)
-        + (Fixed in 0.5) Code Outline panel is not always rendered when open file or tab
-        + (Fixed in 0.5) Exceptions when pointing to not existing place in code
-        + (Fixed in 0.5) Not current panel opened if not last tab selected when opening project
-        + (Fixed in 0.5) Windows jumps randomly when dragged when text too width and horizontal offset.
-        + (Fixed in 0.5) Scale outline when it's too tall to fit
+        &lt;b&gt;In 0.5:&lt;/b&gt;
+        &lt;ul&gt;
+        &lt;li&gt; Plugin does not work when running on Java 6 (JDK 6.0)
+        &lt;li&gt; Code Outline panel is not always rendered when open file or tab
+        &lt;li&gt; Exceptions when pointing to not existing place in code
+        &lt;li&gt; Not current panel opened if not last tab selected when opening project
+        &lt;li&gt; (Not a bug)
+                   Resizing Code Outline panel consume a lot of CPU cause repainted every tick.
+                   Repainting code is not regenerating img every scrollable area changed event occurred, but
+                   when resizing involves changes in visible empty area. It changes img height. This flow
+                   exists cause there is no scaling of rendered source.
+        &lt;li&gt; Windows jumps randomly when dragged when text too width and horizontal offset.
+        &lt;li&gt; (Not Resolved) Plugin not deal well with deleting large amounts of text when file is too large
+        &lt;li&gt; Not always image in the panel is rendered when switching for the first time throught a lot of
+        &lt;li&gt; In 10.5 there is no notifyPublisher method in FileEditorManagerEx
+        &lt;/ul&gt;
     </change-notes>
     <idea-version since-build="93.13"/>
     <application-components>

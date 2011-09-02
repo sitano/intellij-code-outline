@@ -46,7 +46,10 @@ import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.fileEditor.TextEditor;
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.ActionCallback;
+import com.intellij.openapi.util.ExpirableRunnable;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.openapi.wm.ex.ToolWindowManagerListener;
@@ -102,7 +105,8 @@ public class CodeOutlineToolWindow extends JPanel {
                         CodeOutlinePanel panel = getPanel(fileEditor);
                         if (panel != null && panel != getCurrentPanel()) {
                             final FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
-                            ((FileEditorManagerEx) fileEditorManager).notifyPublisher(new Runnable() {
+                            // There is no FileEditorManagerEx.notifyPublisher in IDEA 10.5.x
+                            notifyPublisher(new Runnable() {
                                 @Override
                                 public void run() {
                                     final FileEditorManagerEvent event = new FileEditorManagerEvent(
@@ -118,8 +122,23 @@ public class CodeOutlineToolWindow extends JPanel {
                 }
             }
         }
-    };
+        
+        private ActionCallback notifyPublisher(final Runnable runnable) {
+            final IdeFocusManager focusManager = IdeFocusManager.getInstance(project);
+            final ActionCallback done = new ActionCallback();
 
+            focusManager.doWhenFocusSettlesDown(new ExpirableRunnable.ForProject(project) {
+                @Override
+                public void run() {
+                    runnable.run();
+                    done.setDone();
+                }
+            });
+
+            return done;
+        }
+    };
+    
     /**
      * An editor listener for the given project, to create and destroy code
      * outline panels.
@@ -182,7 +201,7 @@ public class CodeOutlineToolWindow extends JPanel {
                 add(panel, GBC_DEFAULT);
 
                 // Pre-size it, or it will not be rendered in some cases, until h/w would be refreshed by swing.
-                setSize(getWidth(), getHeight());
+                panel.setSize(getWidth(), getHeight());
             }
         }
     };

@@ -52,7 +52,7 @@ Known bugs:
  + (Fixed in 0.5) Windows jumps randomly when dragged when text too width and horizontal offset.
  ? (Not Resolved) Plugin not deal well with deleting large amounts of text when file is too large
  + (Fixed in 0.5) Not always image in the panel is rendered when switching for the first time throught a lot of tabs
- - In 10.5 there is no notifyPublisher method in FileEditorManagerEx
+ + (Fixed in 0.5) In 10.5 there is no notifyPublisher method in FileEditorManagerEx
  - Visible region draws incorrectly when first and last line visible in editor are both folded
  - Problems when closing tab groups
  - Does not draw column-mode (rectangular) selection correctly
