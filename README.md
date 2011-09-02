@@ -30,12 +30,14 @@ Features requests:
 ------------------
  + (Fixed 0.5) Soft horizontal scroll
  + (Fixed 0.5) Scale outline when it's too tall to fit
+ - Soft vertical scroll
  - Render for breakpoint and bookmarks
  - Cursor rendering as hl line
  - Rotate or wrap outline when toolwindow is moved to top or bottom
  - Use user's color settings for selection, background, etc
  - Highlight highlighted regions
  - Show syntax coloring in outline
+ - New rendering mode (like in AllMargins): http://visualstudiogallery.msdn.microsoft.com/465a0d53-5133-4edd-a0cd-94484fe3d853
 
 Known bugs:
 -----------
@@ -49,6 +51,8 @@ Known bugs:
    exists cause there is no scaling of rendered source.
  + (Fixed in 0.5) Windows jumps randomly when dragged when text too width and horizontal offset.
  ? (Not Resolved) Plugin not deal well with deleting large amounts of text when file is too large
+ + (Fixed in 0.5) Not always image in the panel is rendered when switching for the first time throught a lot of tabs
+ - In 10.5 there is no notifyPublisher method in FileEditorManagerEx
  - Visible region draws incorrectly when first and last line visible in editor are both folded
  - Problems when closing tab groups
  - Does not draw column-mode (rectangular) selection correctly

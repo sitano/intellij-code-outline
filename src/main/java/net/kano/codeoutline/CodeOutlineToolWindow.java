@@ -180,6 +180,9 @@ public class CodeOutlineToolWindow extends JPanel {
 
             if (panel != null) {
                 add(panel, GBC_DEFAULT);
+
+                // Pre-size it, or it will not be rendered in some cases, until h/w would be refreshed by swing.
+                setSize(getWidth(), getHeight());
             }
         }
     };
