@@ -3,7 +3,7 @@
     <id>CodeOutline2</id>
     <name>Code Outline 2</name>
     <description>Shows a zoomed out "outline" of your code while you're editing it.</description>
-    <version>0.5</version>
+    <version>0.5.1</version>
     <vendor email="john.koepi@gmail.com">Ivan</vendor>
     <change-notes>
         &lt;b&gt;In 0.5:&lt;/b&gt;
