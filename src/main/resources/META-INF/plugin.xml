@@ -23,6 +23,7 @@
         &lt;li&gt; In 10.5 there is no notifyPublisher method in FileEditorManagerEx
         &lt;/ul&gt;
     </change-notes>
+    <depends>com.intellij.modules.platform</depends>
     <idea-version since-build="93.13"/>
     <application-components>
         <component>
