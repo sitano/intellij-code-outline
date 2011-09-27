@@ -7,7 +7,7 @@ Shows a zoomed out "outline" of your code while you're editing it.
 
 Requirements:
 -------------
- IntelliJ IDEA 9/10/11 and JDK6, 7
+ JDK6, 7, IntelliJ IDEA, RubyMine, Community Edition, PhpStorm/WebStorm, PyCharm, AppCode
 
 Usage:
 ---------
