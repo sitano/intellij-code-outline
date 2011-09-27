@@ -6,6 +6,8 @@
     <version>0.5.1</version>
     <vendor email="john.koepi@gmail.com">Ivan</vendor>
     <change-notes>
+        &lt;b&gt;In 0.5.1:&lt;/b&gt;
+        &lt;li&gt; Fix to plugin manifest to support IntelliJ Platform (IntelliJ IDEA, RubyMine, WebStorm, PhpStorm, PyCharm and AppCode)
         &lt;b&gt;In 0.5:&lt;/b&gt;
         &lt;ul&gt;
         &lt;li&gt; Plugin does not work when running on Java 6 (JDK 6.0)
