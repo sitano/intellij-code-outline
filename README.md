@@ -34,9 +34,9 @@ Features requests:
  - Render for breakpoint and bookmarks
  - Cursor rendering as hl line
  - Rotate or wrap outline when toolwindow is moved to top or bottom
- + Use user's color settings for selection, background, etc
- + Highlight highlighted regions
- + Show syntax coloring in outline
+ + (Fixed 0.5.2) Use user's color settings for selection, background, etc
+ + (Fixed 0.5.2) Highlight highlighted regions
+ + (Fixed 0.5.2) Show syntax coloring in outline
  - New rendering mode (like in AllMargins): http://visualstudiogallery.msdn.microsoft.com/465a0d53-5133-4edd-a0cd-94484fe3d853
 
 Known bugs:
