@@ -13,7 +13,7 @@ Usage:
 ---------
  Download latest version of [Code Outline 2]. Place this file into your IntelliJ IDEA plugin folder.
 
- [Code Outline 2]: https://github.com/sitano/intellij-code-outline/raw/master/release/CodeOutlinePlugin-0.5.1.jar
+ [Code Outline 2]: https://github.com/sitano/intellij-code-outline/raw/master/release/CodeOutlinePlugin-0.5.2.jar
 
 General usage instructions:
 ---------------------------
@@ -34,9 +34,9 @@ Features requests:
  - Render for breakpoint and bookmarks
  - Cursor rendering as hl line
  - Rotate or wrap outline when toolwindow is moved to top or bottom
- - Use user's color settings for selection, background, etc
- - Highlight highlighted regions
- - Show syntax coloring in outline
+ + Use user's color settings for selection, background, etc
+ + Highlight highlighted regions
+ + Show syntax coloring in outline
  - New rendering mode (like in AllMargins): http://visualstudiogallery.msdn.microsoft.com/465a0d53-5133-4edd-a0cd-94484fe3d853
 
 Known bugs:
@@ -79,6 +79,6 @@ IntelliJ IDEA debug note:
 
 Author of original project:
 ---------------------------
-This is the fork of original [code-outline][] plugin that is not supported since 2005 year.
+This is the fork of original [code-outline]() plugin that is not supported since 2005 year.
 
  [code-outline]: http://plugins.intellij.net/plugin/?idea&id=160
