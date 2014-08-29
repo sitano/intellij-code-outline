@@ -30,12 +30,12 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  *  File created by keith @ Oct 25, 2003
- *
+ *  Modified 2011 - 2014, by Ivan Prisyazhniy <john.koepi@gmail.com>
  */
 
 package net.kano.codeoutline;
 
-import java.awt.Rectangle;
+import java.awt.*;
 
 /**
  * An interface for listening for suggested {@link CodeOutlineImage} repaints

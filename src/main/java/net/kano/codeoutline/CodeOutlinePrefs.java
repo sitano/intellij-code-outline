@@ -30,7 +30,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  *  File created by keith @ Oct 27, 2003
- *
+ *  Modified 2011 - 2014, by Ivan Prisyazhniy <john.koepi@gmail.com>
  */
 
 package net.kano.codeoutline;

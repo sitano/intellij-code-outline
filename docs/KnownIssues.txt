@@ -1,4 +1,5 @@
 Known issues:
+
  * Does not scale image when file is too long (too tall) to fit
  * Does not deal well with deleting large amounts of text when file is too
    long to fit

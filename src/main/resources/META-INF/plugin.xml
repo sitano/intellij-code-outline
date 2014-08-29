@@ -3,9 +3,13 @@
     <id>CodeOutline2</id>
     <name>Code Outline 2</name>
     <description>Shows a zoomed out "outline" of your code while you're editing it.</description>
-    <version>0.5.1</version>
+    <version>0.5.2</version>
     <vendor email="john.koepi@gmail.com">Ivan</vendor>
     <change-notes>
+        &lt;b&gt;In 0.5.2:&lt;/b&gt;
+        &lt;ul&gt;
+        &lt;li&gt; Editor color scheme rendering support (Sublime style minimap)
+        &lt;/ul&gt;
         &lt;b&gt;In 0.5.1:&lt;/b&gt;
         &lt;ul&gt;
         &lt;li&gt; Fix to plugin manifest to support IntelliJ Platform (IntelliJ IDEA, RubyMine, WebStorm, PhpStorm, PyCharm and AppCode)
@@ -17,18 +21,18 @@
         &lt;li&gt; Exceptions when pointing to not existing place in code
         &lt;li&gt; Not current panel opened if not last tab selected when opening project
         &lt;li&gt; (Not a bug)
-                   Resizing Code Outline panel consume a lot of CPU cause repainted every tick.
-                   Repainting code is not regenerating img every scrollable area changed event occurred, but
-                   when resizing involves changes in visible empty area. It changes img height. This flow
-                   exists cause there is no scaling of rendered source.
+        Resizing Code Outline panel consume a lot of CPU cause repainted every tick.
+        Repainting code is not regenerating img every scrollable area changed event occurred, but
+        when resizing involves changes in visible empty area. It changes img height. This flow
+        exists cause there is no scaling of rendered source.
         &lt;li&gt; Windows jumps randomly when dragged when text too width and horizontal offset.
         &lt;li&gt; (Not Resolved) Plugin not deal well with deleting large amounts of text when file is too large
         &lt;li&gt; Not always image in the panel is rendered when switching for the first time throught a lot of
         &lt;li&gt; In 10.5 there is no notifyPublisher method in FileEditorManagerEx
         &lt;/ul&gt;
     </change-notes>
+    <idea-version since-build="123.72"/>
     <depends>com.intellij.modules.platform</depends>
-    <idea-version since-build="93.13"/>
     <application-components>
         <component>
             <implementation-class>net.kano.codeoutline.CodeOutlinePlugin
@@ -36,4 +40,5 @@
         </component>
     </application-components>
 </idea-plugin>
+
 

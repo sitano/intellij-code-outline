@@ -4,7 +4,7 @@
 
     <groupId>net.kano.outline</groupId>
     <artifactId>CodeOutlinePlugin</artifactId>
-    <version>0.5.1</version>
+    <version>0.5.2</version>
     <packaging>jar</packaging>
 
     <name>Code Outline 2</name>
@@ -14,7 +14,7 @@
     <developers>
         <developer>
             <id>john.koepi</id>
-            <name>Ivan</name>
+            <name>Ivan Prisyazhniy</name>
             <email>john.koepi@gmail.com</email>
         </developer>
     </developers>
@@ -94,27 +94,27 @@
         <dependency>
             <groupId>com.intellij</groupId>
             <artifactId>openapi</artifactId>
-            <version>10.8-snapshot</version>
+            <version>123-snapshot</version>
         </dependency>
         <dependency>
             <groupId>com.intellij</groupId>
-            <artifactId>idea-openapi</artifactId>
-            <version>10.8-snapshot</version>
+            <artifactId>idea</artifactId>
+            <version>123-snapshot</version>
         </dependency>
         <dependency>
             <groupId>com.intellij</groupId>
-            <artifactId>util-openapi</artifactId>
-            <version>10.8-snapshot</version>
+            <artifactId>util</artifactId>
+            <version>123-snapshot</version>
         </dependency>
         <dependency>
             <groupId>com.intellij</groupId>
-            <artifactId>ext-openapi</artifactId>
-            <version>10.8-snapshot</version>
+            <artifactId>extensions</artifactId>
+            <version>123-snapshot</version>
         </dependency>
         <dependency>
             <groupId>com.intellij</groupId>
             <artifactId>annotations</artifactId>
-            <version>9.0.4</version>
+            <version>123-snapshot</version>
         </dependency>
         <dependency>
             <groupId>jdom</groupId>

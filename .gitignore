@@ -41,3 +41,4 @@ Thumbs.db
 /out/
 /META-INF/
 /classes/
+/lib/*.jar

@@ -30,18 +30,14 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  *  File created by keith @ Oct 24, 2003
- *  Modified by John.Koepi
+ *  Modified 2011 - 2014, by Ivan Prisyazhniy <john.koepi@gmail.com>
  */
 
 package net.kano.codeoutline;
 
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorSettings;
-import com.intellij.openapi.editor.FoldingModel;
-import com.intellij.openapi.editor.LogicalPosition;
-import com.intellij.openapi.editor.ScrollType;
-import com.intellij.openapi.editor.ScrollingModel;
-import com.intellij.openapi.editor.SelectionModel;
+import com.intellij.openapi.editor.*;
+import com.intellij.openapi.editor.colors.ColorKey;
+import com.intellij.openapi.editor.colors.EditorColors;
 import com.intellij.openapi.editor.event.SelectionEvent;
 import com.intellij.openapi.editor.event.SelectionListener;
 import com.intellij.openapi.editor.event.VisibleAreaEvent;
@@ -51,27 +47,11 @@ import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.project.Project;
 
-import javax.swing.AbstractAction;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -86,12 +66,6 @@ public class CodeOutlinePanel extends JPanel {
     private static final TextAttributes CURRENTLINE_ATTRIBUTES
             = new TextAttributes(null, new Color(220, 255, 220), null,
                     null, Font.PLAIN);
-    /** The color of the right margin. */
-    private static final Color COLOR_RIGHTMARGIN = new Color(224, 224, 224);
-    /** The background color of the visible region rectangle. */
-    private static final Color COLOR_VISIBLE_BG = new Color(255, 240, 240);
-    /** The border color of the visible region rectangle. */
-    private static final Color COLOR_VISIBLE_BORDER = new Color(100, 20, 20);
 
     /** The code outline plugin instance which instantiated this panel. */
     private final CodeOutlinePlugin plugin;
@@ -804,52 +778,53 @@ public class CodeOutlinePanel extends JPanel {
     }
 
     protected void paintComponent(Graphics g1) {
-        Graphics2D g = (Graphics2D) g1;
+        final Graphics2D g = (Graphics2D) g1;
 
         // make sure the text outline image is big enough
         image.checkImage(getGraphicsConfiguration(), getWidth(), getHeight());
 
         // fill the whole area with white
-        g.setBackground(Color.WHITE);
+        g.setBackground(editor.getColorsScheme().getDefaultBackground());
         g.clearRect(0, 0, getWidth(), getHeight());
 
+        // draw the text itself
+        image.paint(g);
+
         // compute the area that should be painted as the visible region
-        Rectangle visible = editor.getScrollingModel().getVisibleArea();
-        Rectangle visibleRect = image.getImgRect(visible);
+        final Rectangle visible = editor.getScrollingModel().getVisibleArea();
+        final Rectangle visibleRect = image.getImgRect(visible);
 
         // draw the visible area background
         if (visibleRect != null) {
             visibleRect.grow(1, 1);
-            g.setColor(COLOR_VISIBLE_BG);
+            g.setColor(editor.getColorsScheme().getColor(EditorColors.GUTTER_BACKGROUND));
+            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.5f));
             g.fill(visibleRect);
-        }
+         }
 
         // draw the right margin
-        EditorSettings editorSettings = editor.getSettings();
+        final EditorSettings editorSettings = editor.getSettings();
         if (editorSettings.isRightMarginShown()) {
             int margin = editorSettings.getRightMargin(project);
-            g.setColor(COLOR_RIGHTMARGIN);
+            g.setColor(editor.getColorsScheme().getColor(EditorColors.RIGHT_MARGIN_COLOR));
             g.drawLine(margin, 0, margin, getHeight());
         }
 
         // draw the selection
-        SelectionModel sm = editor.getSelectionModel();
+        final SelectionModel sm = editor.getSelectionModel();
         if (sm.hasSelection()) {
             LogicalPosition sstart = editor.offsetToLogicalPosition(sm.getSelectionStart());
             LogicalPosition send  = editor.offsetToLogicalPosition(sm.getSelectionEnd());
 
-            g.setColor(Color.BLUE);
+            g.setColor(editor.getColorsScheme().getColor(EditorColors.SELECTION_FOREGROUND_COLOR));
             drawSelection(g, sstart, send);
         }
 
         // draw the visible area border, over the margin and the selection
         if (visibleRect != null) {
-            g.setColor(COLOR_VISIBLE_BORDER);
+            g.setColor(editor.getColorsScheme().getColor(EditorColors.RIGHT_MARGIN_COLOR));
             g.draw(visibleRect);
         }
-
-        // draw the text itself
-        image.paint(g);
     }
 
     /**
