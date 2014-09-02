@@ -3,9 +3,13 @@
     <id>CodeOutline2</id>
     <name>Code Outline 2</name>
     <description>Shows a zoomed out "outline" of your code while you're editing it.</description>
-    <version>0.5.2</version>
+    <version>0.5.3</version>
     <vendor email="john.koepi@gmail.com">Ivan</vendor>
     <change-notes>
+        &lt;b&gt;In 0.5.3:&lt;/b&gt;
+        &lt;ul&gt;
+        &lt;li&gt; Fix NPE from getForegroundColor() from HighlighterIterator (default schema)
+        &lt;/ul&gt;
         &lt;b&gt;In 0.5.2:&lt;/b&gt;
         &lt;ul&gt;
         &lt;li&gt; Editor color scheme rendering support (Sublime style minimap)

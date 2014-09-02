@@ -609,7 +609,7 @@ public class CodeOutlineImage {
                 if (col >= visibleImgWidth) continue;
 
                 // Whitespaces are skipped inside drawChar
-                drawChar(ch, col, line, hi.getTextAttributes().getForegroundColor());
+                drawChar(ch, col, line, getCharColor(editor, hi));
 
                 col++;
             }
@@ -650,11 +650,16 @@ public class CodeOutlineImage {
 
             if (col >= visibleImgWidth) break;
 
-            drawChar(ch, col, line, hi.getTextAttributes().getForegroundColor());
+            drawChar(ch, col, line, getCharColor(editor, hi));
             painted++;
             col++;
         }
         return painted;
+    }
+
+    public static Color getCharColor(Editor e, HighlighterIterator h) {
+        final Color color = h.getTextAttributes().getForegroundColor();
+        return color != null ? color : e.getColorsScheme().getDefaultForeground();
     }
 
     /**
