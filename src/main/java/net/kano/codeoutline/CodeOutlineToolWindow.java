@@ -84,16 +84,17 @@ public class CodeOutlineToolWindow extends JPanel {
 
         @Override
         public void stateChanged() {
-            ToolWindowManager twm = ToolWindowManager.getInstance(project);
-            String activeToolWindowId = twm.getActiveToolWindowId();
+            final ToolWindowManager twm = ToolWindowManager.getInstance(project);
+            final String activeToolWindowId = twm.getActiveToolWindowId();
             if (activeToolWindowId != null && activeToolWindowId.equals(CodeOutlinePlugin.TOOLWINDOW_ID)) {
-                ToolWindow tw = twm.getToolWindow(activeToolWindowId);
+                final ToolWindow tw = twm.getToolWindow(activeToolWindowId);
                 if (tw.isVisible()) {
-                    Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
-                    if (editor != null) {
+                    final Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+                    // This is the same as editor != EditorEx && editor instanceof EditorEx
+                    if (editor instanceof EditorEx) {
                         final VirtualFile vFile = ((EditorEx) editor).getVirtualFile();
                         final FileEditor fileEditor = FileEditorManager.getInstance(project).getSelectedEditor(vFile);
-                        CodeOutlinePanel panel = getPanel(fileEditor);
+                        final CodeOutlinePanel panel = getPanel(fileEditor);
                         if (panel != null && panel != getCurrentPanel()) {
                             final FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
                             // There is no FileEditorManagerEx.notifyPublisher in IDEA 10.5.x
@@ -137,9 +138,9 @@ public class CodeOutlineToolWindow extends JPanel {
     private FileEditorManagerListener editorListener = new FileEditorManagerListener() {
         @Override
         public void fileOpened(FileEditorManager source, VirtualFile file) {
-            FileEditor fileEditor = source.getSelectedEditor(file);
+            final FileEditor fileEditor = source.getSelectedEditor(file);
             if (fileEditor instanceof TextEditor) {
-                CodeOutlinePanel panel = openPanel(fileEditor, file);
+                final CodeOutlinePanel panel = openPanel(fileEditor, file);
                 /* Force panel sub-component switch, cause we have no guaranty it will come
                  * after we register new instance.
                  */
@@ -157,12 +158,14 @@ public class CodeOutlineToolWindow extends JPanel {
          * Switch panel if given editor is selected
          */
         private boolean checkCurrentPanel(FileEditorManager source, VirtualFile file, CodeOutlinePanel panel) {
-            EditorEx selectedEditorEx = ((EditorEx)source.getSelectedTextEditor());
-            if (selectedEditorEx.getVirtualFile() == file && !isAncestorOf(panel)) {
-                replacePanel(panel);
-                return true;
+            final Editor editor = source.getSelectedTextEditor();
+            // This is the same as editor != EditorEx && editor instanceof EditorEx
+            if (editor instanceof EditorEx) {
+                if (((EditorEx)editor).getVirtualFile().equals(file) && !isAncestorOf(panel)) {
+                    replacePanel(panel);
+                    return true;
+                }
             }
-            
             return false;
         }
 
@@ -173,7 +176,7 @@ public class CodeOutlineToolWindow extends JPanel {
          */
         @Override
         public void selectionChanged(final FileEditorManagerEvent event) {
-            CodeOutlinePanel panel = editor2panel.get(event.getNewEditor());
+            final CodeOutlinePanel panel = editor2panel.get(event.getNewEditor());
             replacePanel(panel);
             repaint();
         }
@@ -216,11 +219,11 @@ public class CodeOutlineToolWindow extends JPanel {
         this.project = project;
         this.fem = FileEditorManager.getInstance(this.project);
         this.fem.addFileEditorManagerListener(editorListener);
-        FileDocumentManager docMgr = FileDocumentManager.getInstance();
+        final FileDocumentManager docMgr = FileDocumentManager.getInstance();
         for (FileEditor fileEditor : fem.getAllEditors()) {
             if (fileEditor instanceof TextEditor) {
-                Editor textEditor = ((TextEditor) fileEditor).getEditor();
-                VirtualFile file = docMgr.getFile(textEditor.getDocument());
+                final Editor textEditor = ((TextEditor) fileEditor).getEditor();
+                final VirtualFile file = docMgr.getFile(textEditor.getDocument());
                 if (file != null) {
                     openPanel(fileEditor, file);
                 }
@@ -236,8 +239,10 @@ public class CodeOutlineToolWindow extends JPanel {
      * @param file a file
      */
     private synchronized CodeOutlinePanel openPanel(FileEditor fileEditor, VirtualFile file) {
-        Editor editor = ((TextEditor) fileEditor).getEditor();
-        CodeOutlinePanel panel = new CodeOutlinePanel(plugin, project, editor);
+        final Editor editor = ((TextEditor) fileEditor).getEditor();
+        final CodeOutlinePanel panel = editor instanceof EditorEx
+                ? new CodeOutlinePanel(plugin, project, (EditorEx)editor)
+                : new CodeOutlinePanel(plugin, project, editor);
 
         editor2panel.put(fileEditor, panel);
         file2panel.put(file, panel);
@@ -252,7 +257,7 @@ public class CodeOutlineToolWindow extends JPanel {
      * @param file a file
      */
     private synchronized void closePanel(VirtualFile file) {
-        CodeOutlinePanel panel = file2panel.remove(file);
+        final CodeOutlinePanel panel = file2panel.remove(file);
 
         if (panel == null) return;
 

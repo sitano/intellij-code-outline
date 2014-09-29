@@ -41,8 +41,6 @@ import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.ScrollingModel;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.editor.ex.EditorEx;
-import com.intellij.openapi.editor.highlighter.EditorHighlighter;
 import com.intellij.openapi.editor.highlighter.HighlighterIterator;
 import com.intellij.openapi.util.TextRange;
 
@@ -57,29 +55,27 @@ import java.awt.image.WritableRaster;
  */
 public class CodeOutlineImage {
     /** An RGB color mask for a completely transparent white. */
-    private static final int COLORMASK_TRANSPARENT = 0x00FFFFFF;
-    /** A completely transparent white. */
-    private static final Color TRANSPARENT = new Color(255, 255, 255, 0);
+    public static final int COLORMASK_TRANSPARENT = 0x00FFFFFF;
 
     /** The logical position of the offset in a file. */
-    private static final LogicalPosition LOGPOS_START = new LogicalPosition(0, 0);
+    public static final LogicalPosition LOGPOS_START = new LogicalPosition(0, 0);
 
     /** The editor being outlined. */
-    private final Editor editor;
+    protected final Editor editor;
     /** The document being outlined. */
-    private final Document document;
+    protected final Document document;
 
     /** The text outline image. */
-    private BufferedImage img = null;
+    protected BufferedImage img = null;
     /** An empty line. */
-    private int[] emptyLine = null;
+    protected int[] emptyLine = null;
 
     /** The width of the image visible to the user. */
-    private int visibleImgWidth = 0;
+    protected int visibleImgWidth = 0;
     /** The height of the image visible to the user. */
-    private int visibleImgHeight = 0;
+    protected int visibleImgHeight = 0;
     /** Vertical scale factor */
-    private double scale = 1.0;
+    protected double scale = 1.0;
 
     /** The listener listening to this image. */
     private final CodeOutlineListener listener;
@@ -583,22 +579,14 @@ public class CodeOutlineImage {
      * @param len the number of characters to render
      * @param pos the position at which to start rendering
      */
-    private void renderToImg(CharSequence chars, int offset, int len, LogicalPosition pos) {
+    protected void renderToImg(CharSequence chars, int offset, int len, LogicalPosition pos) {
         if (img == null) return;
-
-        final EditorEx ex = (EditorEx)editor;
-        final EditorHighlighter hl = ex.getHighlighter();
-        final HighlighterIterator hi = hl.createIterator(offset);
 
         int line = pos.line, col = pos.column;
 
         // Render characters
         for (int i = offset; i < len; i++) {
             final char ch = chars.charAt(i);
-
-            while (!hi.atEnd() && i > hi.getEnd()) {
-                hi.advance();
-            }
 
             if (ch == '\n') {
                 line++;
@@ -609,7 +597,7 @@ public class CodeOutlineImage {
                 if (col >= visibleImgWidth) continue;
 
                 // Whitespaces are skipped inside drawChar
-                drawChar(ch, col, line, getCharColor(editor, hi));
+                drawChar(ch, col, line, editor.getColorsScheme().getDefaultForeground());
 
                 col++;
             }
@@ -625,7 +613,7 @@ public class CodeOutlineImage {
      * @param startOff the offset into the document at which to start rendering
      * @return how many characters were rendered, not including the newline
      */
-    private int renderRestOfLineToImg(int startOff) {
+    protected int renderRestOfLineToImg(int startOff) {
         final CharSequence chars = document.getCharsSequence();
         final int endOff = document.getTextLength();
         if (startOff >= endOff) return 0;
@@ -633,24 +621,14 @@ public class CodeOutlineImage {
         final LogicalPosition startPos = editor.offsetToLogicalPosition(startOff);
         final int line = startPos.line;
 
-        final EditorEx ex = (EditorEx)editor;
-        final EditorHighlighter hl = ex.getHighlighter();
-        final HighlighterIterator hi = hl.createIterator(startOff);
-
         int col = startPos.column;
         int painted = 0;
         for (int i = startOff; i < endOff; i++) {
             final char ch = chars.charAt(i);
 
-            while (!hi.atEnd() && i > hi.getEnd()) {
-                hi.advance();
-            }
+            if (ch == '\n' || col >= visibleImgWidth) break;
 
-            if (ch == '\n') break;
-
-            if (col >= visibleImgWidth) break;
-
-            drawChar(ch, col, line, getCharColor(editor, hi));
+            drawChar(ch, col, line, editor.getColorsScheme().getDefaultForeground());
             painted++;
             col++;
         }
@@ -669,7 +647,7 @@ public class CodeOutlineImage {
      * @param col the column number
      * @param line the line number
      */
-    private void drawChar(char ch, int col, int line, Color color) {
+    protected void drawChar(char ch, int col, int line, Color color) {
         if (!Character.isWhitespace(ch)) {
             img.setRGB(col, getScaledLine(line, scale), color.getRGB());
         }

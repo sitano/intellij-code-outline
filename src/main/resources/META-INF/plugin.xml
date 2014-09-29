@@ -3,9 +3,13 @@
     <id>CodeOutline2</id>
     <name>Code Outline 2</name>
     <description>Shows a zoomed out "outline" of your code while you're editing it.</description>
-    <version>0.5.3</version>
+    <version>0.5.4</version>
     <vendor email="john.koepi@gmail.com">Ivan</vendor>
     <change-notes>
+        &lt;b&gt;In 0.5.4:&lt;/b&gt;
+        &lt;ul&gt;
+        &lt;li&gt; Fix NPE thrown when foremost window is not a text editor #10
+        &lt;/ul&gt;
         &lt;b&gt;In 0.5.3:&lt;/b&gt;
         &lt;ul&gt;
         &lt;li&gt; Fix NPE from getForegroundColor() from HighlighterIterator (default schema)

@@ -42,6 +42,7 @@ import com.intellij.openapi.editor.event.SelectionEvent;
 import com.intellij.openapi.editor.event.SelectionListener;
 import com.intellij.openapi.editor.event.VisibleAreaEvent;
 import com.intellij.openapi.editor.event.VisibleAreaListener;
+import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.markup.MarkupModel;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.editor.markup.TextAttributes;
@@ -152,7 +153,7 @@ public class CodeOutlinePanel extends JPanel {
 
         public void mousePressed(MouseEvent e) {
             Point point = e.getPoint();
-            
+
             double scale = image.getScale();
             if (scale < 1.0) {
                 point = new Point(point.x, CodeOutlineImage.getOutScaledLine(point.y, scale));
@@ -402,12 +403,31 @@ public class CodeOutlinePanel extends JPanel {
      * @param editor the editor whose contents this panel outlines
      */
     public CodeOutlinePanel(CodeOutlinePlugin plugin, Project project,
+                            EditorEx editor) {
+        this.plugin = plugin;
+        this.project = project;
+        this.editor = editor;
+        this.image = new CodeOutlineImageEx(editor, repaintListener);
+        this.prefs = plugin.getPrefs();
+
+        init();
+    }
+
+    /**
+     * Creates a new code outline panel for the given plugin, project, and
+     * editor.
+     *
+     * @param plugin a code outline plugin instance
+     * @param project the project with which this panel is associated
+     * @param editor the editor whose contents this panel outlines
+     */
+    public CodeOutlinePanel(CodeOutlinePlugin plugin, Project project,
             Editor editor) {
         this.plugin = plugin;
         this.project = project;
         this.editor = editor;
-        image = new CodeOutlineImage(editor, repaintListener);
-        prefs = plugin.getPrefs();
+        this.image = new CodeOutlineImage(editor, repaintListener);
+        this.prefs = plugin.getPrefs();
 
         init();
     }
@@ -754,18 +774,18 @@ public class CodeOutlinePanel extends JPanel {
     }
 
     public void fillRectNotZero(Graphics2D g, int x, int y, int width, int height, double scale) {
-        y = image.getScaledLine(y, scale);
-        height = image.getScaledLine(height, scale);
+        y = CodeOutlineImage.getScaledLine(y, scale);
+        height = CodeOutlineImage.getScaledLine(height, scale);
         if (height < 1) height = 1;
         g.fillRect(x, y, width, height);
     }
 
     public void fillRect(Graphics2D g, int x, int y, int width, int height, double scale) {
-        g.fillRect(x, image.getScaledLine(y, scale), width, image.getScaledLine(height, scale));
+        g.fillRect(x, CodeOutlineImage.getScaledLine(y, scale), width, CodeOutlineImage.getScaledLine(height, scale));
     }
 
     public void drawLine(Graphics2D g, int x1, int y1, int x2, int y2, double scale) {
-        g.drawLine(x1, image.getScaledLine(y1, scale), x2, image.getScaledLine(y2, scale));
+        g.drawLine(x1, CodeOutlineImage.getScaledLine(y1, scale), x2, CodeOutlineImage.getScaledLine(y2, scale));
     }
 
     /**
