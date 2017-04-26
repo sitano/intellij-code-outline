@@ -15,6 +15,11 @@ Usage:
 
  [Code Outline 2]: https://github.com/sitano/intellij-code-outline/raw/master/release/
 
+Preview:
+--------
+
+![Preview](https://github.com/sitano/intellij-code-outline/blob/master/docs/screenshot.png?raw=true)
+
 General usage instructions:
 ---------------------------
  * Left mouse button: Go to position in file (do not expand fold region)
